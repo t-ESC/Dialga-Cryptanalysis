@@ -1,4 +1,4 @@
-use std::convert::From;
+use std::{convert::From};
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct State(pub [[u8; 4];4]);
@@ -89,4 +89,67 @@ pub fn byte_permutation_inv(state: &mut State, i: usize) {
 
         }
     }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub struct BitArray ([bool; 8]); // ASSUMPTION: Most Significant Bit First
+
+impl From<u8> for BitArray {
+    fn from(value: u8) -> Self {
+        let mut output = [false; 8];
+        for j in 0..8 {
+            if value&(1<<j) > 0 { // First Element here is least significant bit
+                output[7-j] = true;
+            }
+        }
+        BitArray(output)
+    }
+}
+
+impl Into<u8> for BitArray {
+    fn into(self) -> u8 {
+        let mut output = 0u8;
+        for j in 0..8 {
+            if self.0[j] {
+                output += 1 << (7-j);
+            }
+        }
+        return output;
+    }
+}
+
+const PBI: [[u8; 8];4] = [
+	[4, 1, 6, 3, 0, 5, 2, 7],
+	[1, 6, 7, 0, 5, 2, 3, 4],
+	[2, 3, 4, 1, 6, 7, 0, 5],
+	[7, 4, 1, 2, 3, 0, 5, 6],
+];
+
+const PBI_INV: [[u8; 8];4] = [
+	[4, 1, 6, 3, 0, 5, 2, 7], //symmetric to Pb0
+	[3, 0, 5, 6, 7, 4, 1, 2],
+	[6, 3, 0, 1, 2, 7, 4, 5],
+	[5, 2, 3, 4, 1, 6, 7, 0],
+];
+
+fn permute_bits(byte: u8, i: usize) -> u8 {
+    let mut permuted_bit_array = BitArray::from(byte);
+    let original_bit_array = BitArray::from(byte);
+
+    for j in 0..8 {
+        permuted_bit_array.0[PBI[i][j] as usize] = original_bit_array.0[j];
+    }
+    
+    permuted_bit_array.into()
+}
+
+fn permute_bits_inv(byte: u8, i: usize) -> u8 {
+    let mut permuted_bit_array = BitArray::from(byte);
+    let original_bit_array = BitArray::from(byte);
+
+    for j in 0..8 {
+        permuted_bit_array.0[PBI_INV[i][j] as usize] = original_bit_array.0[j];
+    }
+    
+    permuted_bit_array.into()
 }

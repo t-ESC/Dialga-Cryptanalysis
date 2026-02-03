@@ -40,5 +40,15 @@ mod tests {
 
         println!("{:?}", state1);
     }
+
+    #[test]
+    fn test_bitarray_from_into() {
+        for test_case in 0..=0xFF_u8 {
+            let result_array = BitArray::from(test_case);
+            let result:u8 = result_array.into();
+
+            assert_eq!(test_case, result);
+        }
+    }
 }
 
