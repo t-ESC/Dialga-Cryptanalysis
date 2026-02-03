@@ -3,6 +3,8 @@
 #[cfg(test)]
 mod tests {
     use dialga_cipher_rust::dialga::*;
+    use dialga_cipher_rust::helper::state::*;
+    use dialga_cipher_rust::helper::bitarray::*;
 
     const TEST_STATE: State = State([
             [0xFF, 0x01, 0x02, 0x03],

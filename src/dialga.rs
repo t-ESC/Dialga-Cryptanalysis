@@ -1,29 +1,5 @@
-use std::{convert::From};
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct State(pub [[u8; 4];4]);
-
-impl State {
-    pub fn new(data: [[u8; 4];4]) {
-        State(data);
-    }
-
-    pub fn from_flat(data: [u8; 16]) -> State {
-        let mut mat = [[0_u8; 4];4];
-        for i in 0..16 {
-            let j = i % 4;
-            let k = i / 4;
-            mat[j][k] = data[i]; 
-        }
-        State(mat)
-    }
-}
-
-impl From<[u8; 16]> for State {
-    fn from(value: [u8; 16]) -> Self {
-        State::from_flat(value)
-    }
-}
+use crate::helper::state::*;
+use crate::helper::bitarray::*;
 
 pub fn matrix_mul(state: &mut State, i: usize) { // make state mutalble for now (i think this is the better way, can check AES impl later
     
@@ -91,32 +67,7 @@ pub fn byte_permutation_inv(state: &mut State, i: usize) {
     }
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct BitArray ([bool; 8]); // ASSUMPTION: Most Significant Bit First
 
-impl From<u8> for BitArray {
-    fn from(value: u8) -> Self {
-        let mut output = [false; 8];
-        for j in 0..8 {
-            if value&(1<<j) > 0 { // First Element here is least significant bit
-                output[7-j] = true;
-            }
-        }
-        BitArray(output)
-    }
-}
-
-impl Into<u8> for BitArray {
-    fn into(self) -> u8 {
-        let mut output = 0u8;
-        for j in 0..8 {
-            if self.0[j] {
-                output += 1 << (7-j);
-            }
-        }
-        return output;
-    }
-}
 
 const PBI: [[u8; 8];4] = [
 	[4, 1, 6, 3, 0, 5, 2, 7],
