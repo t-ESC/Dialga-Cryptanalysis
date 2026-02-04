@@ -2,7 +2,7 @@ use crate::dialga::roundfunction::*;
 use crate::dialga::helper::state::{State};
 use crate::dialga::roundconstants::*;
 
-const ALPHA:usize = 4;
+const ALPHA:usize = 5;
 
 pub fn encrypt(plaintext: u128, tweak: u128, key: [u128; 2]) -> u128 {
     let mut state_d = State::from(plaintext ^ key[0] ^ key[1] ^ tweak);
@@ -16,7 +16,6 @@ pub fn encrypt(plaintext: u128, tweak: u128, key: [u128; 2]) -> u128 {
 }
 
 pub fn decrypt(ciphertext: u128, tweak: u128, key: [u128; 2]) -> u128 {
-    println!("{:x}", ciphertext);
     let mut state_d = State::from(ciphertext);
     let state_t = State::from(tweak);
 
