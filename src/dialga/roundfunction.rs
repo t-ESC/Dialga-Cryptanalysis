@@ -23,6 +23,13 @@ pub fn matrix_mul(state: &mut State, i: usize) { // make state mutalble for now 
 
     let pre_mix:State = *state;
     
+    // for j in 0..4{ //Midori shuffles every column of the matrix, maybe they do here too
+    //     state.0[0][j] = pre_mix.0[1][j] ^ pre_mix.0[2][j] ^ pre_mix.0[3][j];
+    //     state.0[1][j] = pre_mix.0[0][j] ^ pre_mix.0[2][j] ^ pre_mix.0[3][j];
+    //     state.0[2][j] = pre_mix.0[0][j] ^ pre_mix.0[1][j] ^ pre_mix.0[3][j];
+    //     state.0[3][j] = pre_mix.0[0][j] ^ pre_mix.0[1][j] ^ pre_mix.0[2][j];
+    // }
+
     state.0[0][i] = pre_mix.0[1][i] ^ pre_mix.0[2][i] ^ pre_mix.0[3][i];
     state.0[1][i] = pre_mix.0[0][i] ^ pre_mix.0[2][i] ^ pre_mix.0[3][i];
     state.0[2][i] = pre_mix.0[0][i] ^ pre_mix.0[1][i] ^ pre_mix.0[3][i];

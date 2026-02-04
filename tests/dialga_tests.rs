@@ -2,6 +2,7 @@
 
 #[cfg(test)]
 mod tests {
+    use dialga_cipher_rust::dialga::roundconstants;
     use dialga_cipher_rust::dialga::roundfunction::*;
     use dialga_cipher_rust::dialga::helper::bitarray::*;
     use dialga_cipher_rust::dialga::helper::state::*;
@@ -14,6 +15,13 @@ mod tests {
         ]);
 
     const TEST_NUMBER: u128 = 0xFF102030011121310212223203132333_u128;
+
+    const PAINTEXT:u128 = 0x00112233445566778899aabbccddeeff;
+    const KEY: [u128; 2] = [
+        0x00112233445566778899aabbccddeeff,
+        0x112233445566778899aabbccddeeff00,
+    ];
+    const TWEAK:u128 = 0x2233445566778899aabbccddeeff0011;
 
     #[test]
     fn test_state_from() {
@@ -103,12 +111,29 @@ mod tests {
     }
 
     #[test]
-    fn test_roundfunction(){
-        let mut before:State = State::from(0x331177113311ff11331177113311ff11_u128);
-        let result:State = State::from(0xaa88aa33aacc5577cceecc11ccbb6644_u128);
+    fn test_roundfunction_0(){
+        let start = PAINTEXT ^ TWEAK ^ KEY[0] ^ KEY[1];
+        let r_1:u128 = 0x9f95f3ff7a092a2c465dfdf31225ea00;
+        let desired_output  = r_1 ^ KEY[1] ^ roundconstants::C_F[0];
+        
+        let mut test_state = State::from(start);
+        r_i(&mut test_state, 0);
+        let output:u128 = test_state.into();
+        println!("{:b}", output);
+        println!("{:b}", desired_output);
+        assert_eq!(output, desired_output);
+    }
 
-        r_i(&mut before, 0);
-        assert_eq!(before, result);
+    #[test]
+    fn test_roundfunction_1() {
+        let r_1:u128 = 0x9f95f3ff7a092a2c465dfdf31225ea00;
+        let r_2:u128 = 0x98871f6b568e38c69b2df2b8fecc46c4;
+
+        let desired_output = r_2 ^ KEY[0] ^ TWEAK ^ roundconstants::C_F[1];
+        let mut output_state = State::from(r_1);
+        r_i(&mut output_state, 1);
+        let output:u128 = output_state.into();
+        assert_eq!(output, desired_output);
     }
 
 }
