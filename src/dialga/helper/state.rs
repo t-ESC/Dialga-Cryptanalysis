@@ -25,9 +25,28 @@ impl From<[u8; 16]> for State {
     }
 }
 
+impl Into<[u8; 16]> for State {
+    fn into(self) -> [u8; 16] {
+        let mut result = [0_u8; 16];
+        for col in 0..4 {
+            for row in 0..4 {
+                let index = (row << 2) + col;
+                result[index] = self.0[col][row];
+            }
+        }
+        result 
+    }
+}
+
 impl From<u128> for State {
     fn from(value: u128) -> Self {
         State::from_flat(value.to_be_bytes())
+    }
+}
+
+impl Into<u128> for State {
+    fn into(self) -> u128 {
+        u128::from_be_bytes(self.into())
     }
 }
 
