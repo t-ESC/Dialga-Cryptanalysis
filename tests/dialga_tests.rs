@@ -2,6 +2,7 @@
 
 #[cfg(test)]
 mod tests {
+    use dialga_cipher_rust::dialga::ms::*;
     use dialga_cipher_rust::dialga::roundconstants;
     use dialga_cipher_rust::dialga::roundfunction::*;
     use dialga_cipher_rust::dialga::helper::bitarray::*;
@@ -108,6 +109,21 @@ mod tests {
             r_i_inv(&mut state, i);
             assert_eq!(TEST_STATE, state);
         }
+    }
+
+    #[test]
+    fn test_ms() {
+        for test_case in 0..=0xF {
+            assert_eq!(test_case, PI_M_INV[PI_M[test_case as usize] as usize])
+        }
+    }
+
+    #[test]
+    fn test_ms_impl() {
+        let mut test_case = TEST_STATE;
+        ms(&mut test_case);
+        ms_inv(&mut test_case);
+        assert_eq!(TEST_STATE, test_case)
     }
 
     #[test]
