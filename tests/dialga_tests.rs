@@ -22,6 +22,14 @@ mod tests {
     }
 
     #[test]
+    fn test_state_xor() {
+        let state1 = State::from(0xFF102030011121310212223203132333_u128);
+        let mut case = State::from(0_u128);
+        case ^= state1;
+        assert_eq!(TEST_STATE, case);
+    }
+
+    #[test]
     fn test_bitarray_from_into() {
         for test_case in 0..=0xFF_u8 {
             let result_array = BitArray::from(test_case);
