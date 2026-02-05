@@ -2,11 +2,16 @@
 
 #[cfg(test)]
 mod tests {
-    use dialga_cipher_rust::dialga::ms::*;
-    use dialga_cipher_rust::dialga::roundconstants;
-    use dialga_cipher_rust::dialga::roundfunction::*;
     use dialga_cipher_rust::dialga::helper::bitarray::*;
     use dialga_cipher_rust::dialga::helper::state::*;
+    
+    use dialga_cipher_rust::dialga::ms::*;
+    use dialga_cipher_rust::dialga::roundconstants;
+    use dialga_cipher_rust::dialga::roundfunction::r_i::*;
+    
+    use dialga_cipher_rust::dialga::roundfunction::matrix_mul::*;
+    use dialga_cipher_rust::dialga::roundfunction::sub_cell::*;
+    use dialga_cipher_rust::dialga::roundfunction::permutation::*;
 
     const TEST_STATE: State = State([
             [0xFF, 0x01, 0x02, 0x03],

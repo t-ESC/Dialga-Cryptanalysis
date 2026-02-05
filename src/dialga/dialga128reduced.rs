@@ -1,4 +1,4 @@
-use crate::dialga::roundfunction::*;
+use crate::dialga::roundfunction::r_i::*;
 use crate::dialga::helper::state::{State};
 use crate::dialga::roundconstants::*;
 

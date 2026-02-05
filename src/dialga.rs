@@ -1,8 +1,5 @@
 pub mod dialga128reduced;
-pub mod helper {
-    pub mod bitarray;
-    pub mod state;
-}
+pub mod helper;
 pub mod roundfunction;
 pub mod ms;
 pub mod roundconstants;
