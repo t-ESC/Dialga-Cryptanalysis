@@ -16,25 +16,25 @@ const PBI_INV: [[u8; 8];4] = [
 ];
 
 pub fn permute_bits(byte: u8, i: usize) -> u8 {
-    let mut permuted_bit_array = BitArray::from(byte);
-    let original_bit_array = BitArray::from(byte);
+    let mut result = 0_u8;
 
     for j in 0..8 {
-        permuted_bit_array.0[PBI[i][j] as usize] = original_bit_array.0[j];
+        let bit_value = (byte >> (7-j)) & 0b1; // Isolate bit from each position (MSB-first)
+        result |= bit_value << (7-PBI[i][j]); // 7- because we are working in MSB-first, index 7 is lowest bit and 0 is highest
     }
-    
-    permuted_bit_array.into()
+
+    result
 }
 
 pub fn permute_bits_inv(byte: u8, i: usize) -> u8 {
-    let mut permuted_bit_array = BitArray::from(byte);
-    let original_bit_array = BitArray::from(byte);
+    let mut result = 0_u8;
 
     for j in 0..8 {
-        permuted_bit_array.0[PBI_INV[i][j] as usize] = original_bit_array.0[j];
+        let bit_value = (byte >> (7-j)) & 0b00000001; // Isolate bit from each position (MSB-first)
+        result |= bit_value << (7-PBI_INV[i][j]);
+        
     }
-    
-    permuted_bit_array.into()
+    result
 }
 
 const SB0: [u8;16] = [0xc, 0xa, 0xd, 3, 0xe, 0xb, 0xf, 7, 8, 9, 1, 5, 0, 2, 4, 6]; //4-bit sbox, used in parallel, symmetrical SBOX
