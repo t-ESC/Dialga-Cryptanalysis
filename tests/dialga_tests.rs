@@ -27,8 +27,10 @@ mod tests {
         0x00112233445566778899aabbccddeeff,
         0x112233445566778899aabbccddeeff00,
     ];
-    const TWEAK:u128 = 0x2233445566778899aabbccddeeff0011;
-    const CIPHERTEXT:u128 = 0x838407143af9a876fbdc6be378e9045b; // of dialga 128 reduced
+    const TWEAK0:u128 = 0x2233445566778899aabbccddeeff0011;
+    const TWEAK1:u128 = 0x33445566778899aabbccddeeff001100;
+    const CIPHERTEXT_DIALGA128:u128 = 0x838407143af9a876fbdc6be378e9045b; // of dialga 128 reduced
+    const CIPHERTEXT_DIALGA256:u128 = 0x833367ce5fd49a7b1f0dd9ec62720018;
 
     #[test]
     fn test_state_from() {
@@ -150,7 +152,7 @@ mod tests {
 
     #[test]
     fn test_roundfunction_0(){
-        let start = PAINTEXT ^ TWEAK ^ KEY[0] ^ KEY[1];
+        let start = PAINTEXT ^ TWEAK0 ^ KEY[0] ^ KEY[1];
         let r_1:u128 = 0x9f95f3ff7a092a2c465dfdf31225ea00;
         let desired_output  = r_1 ^ KEY[1] ^ roundconstants::C_F[0];
         
@@ -164,7 +166,7 @@ mod tests {
         let r_1:u128 = 0x9f95f3ff7a092a2c465dfdf31225ea00;
         let r_2:u128 = 0x98871f6b568e38c69b2df2b8fecc46c4;
 
-        let desired_output = r_2 ^ KEY[0] ^ TWEAK ^ roundconstants::C_F[1];
+        let desired_output = r_2 ^ KEY[0] ^ TWEAK0 ^ roundconstants::C_F[1];
         let mut output_state = State::from(r_1);
         r_i(&mut output_state, 1);
         assert_eq!(State::from(desired_output), output_state);
@@ -172,7 +174,7 @@ mod tests {
 
     #[test]
     fn test_sub_cell_outside_r_i() {
-        let output = CIPHERTEXT ^ KEY[0] ^ KEY[1];
+        let output = CIPHERTEXT_DIALGA128 ^ KEY[0] ^ KEY[1];
         let r16: u128 = 0x92a33e3c3115979441131a892119bed7;
         let mut test_state = State::from(r16);
 
@@ -186,7 +188,7 @@ mod tests {
     #[test]
     fn test_sub_cell_outside_r_i_reverse() {
         let r16: u128 = 0x92a33e3c3115979441131a892119bed7;
-        let output: u128 = CIPHERTEXT ^ KEY[0] ^ KEY[1];
+        let output: u128 = CIPHERTEXT_DIALGA128 ^ KEY[0] ^ KEY[1];
         let mut test_state = State::from(output);
 
         println!("{:?}", test_state);
@@ -206,6 +208,18 @@ mod tests {
         sub_cell_inv(&mut test_state);
 
         assert_eq!(first_state.0[2], test_state.0[2]);
+    }
+
+    #[test]
+    fn test_sub_cell_256_vector() {
+        let mut r16 = State::from(0x4daa1d40e36de6bdda58801d83a4aa6b);
+        let mut tweak1 = State::from(TWEAK1);
+        ms(&mut tweak1);
+        let tweak1_u128: u128 = tweak1.into();
+        let desired_output = CIPHERTEXT_DIALGA256 ^ KEY[0] ^ KEY[1] ^ tweak1_u128;
+
+        sub_cell_inv(&mut r16);
+        assert_eq!(State::from(desired_output), r16);
 
     }
 
