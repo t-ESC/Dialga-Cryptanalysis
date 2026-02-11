@@ -8,12 +8,12 @@ impl State {
         State(data)
     }
 
-    pub fn from_flat(data: [u8; 16]) -> State {
+    pub fn from_flat(data: [u8;16]) -> State {
         let mut mat = [[0_u8; 4];4];
         for i in 0..16 {
-            let j = i % 4;
-            let k = i / 4;
-            mat[j][k] = data[i]; 
+            let row = i & 0b0011;
+            let col = i >> 2;
+            mat[row][col] = data[i];
         }
         State(mat)
     }
@@ -28,10 +28,10 @@ impl From<[u8; 16]> for State {
 impl Into<[u8; 16]> for State {
     fn into(self) -> [u8; 16] {
         let mut result = [0_u8; 16];
-        for col in 0..4 {
-            for row in 0..4 {
+        for row in 0..4 {
+            for col in 0..4 {
                 let index = (row << 2) + col;
-                result[index] = self.0[col][row];
+                result[index] = self.0[row][col];
             }
         }
         result 
@@ -55,9 +55,9 @@ impl BitXor for State {
 
     fn bitxor(self, rhs: Self) -> Self::Output {
         let mut result: State = State::from(0_u128);
-        for col in 0..4 {
-            for row in 0..4 {
-                result.0[col][row] = self.0[col][row] ^ rhs.0[col][row];
+        for row in 0..4 {
+            for col in 0..4 {
+                result.0[row][col] = self.0[row][col] ^ rhs.0[row][col];
             }
         }
         result
@@ -66,9 +66,9 @@ impl BitXor for State {
 
 impl BitXorAssign for State {
     fn bitxor_assign(&mut self, rhs: Self) {
-        for col in 0..4 {
-            for row in 0..4 {
-                self.0[col][row] ^= rhs.0[col][row];
+        for row in 0..4 {
+            for col in 0..4 {
+                self.0[row][col] ^= rhs.0[row][col];
             }
         }
     }
@@ -79,9 +79,9 @@ impl BitXor<u128> for State {
 
     fn bitxor(self, rhs: u128) -> Self::Output {
         let mut result = State::from(rhs);
-        for col in 0..4 {
-            for row in 0..4 {
-                result.0[col][row] ^= self.0[col][row];
+        for row in 0..4 {
+            for col in 0..4 {
+                result.0[row][col] ^= self.0[row][col];
             }
         }
         result
