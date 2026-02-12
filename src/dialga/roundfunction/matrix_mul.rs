@@ -32,7 +32,7 @@ pub fn matrix_mul(state: &mut State) -> State { //Midori shuffles every column o
 }
 
 mod tests {
-    use crate::dialga::{helper::state::State, roundfunction::{matrix_mul::matrix_mul}};
+    use super::*;
     #[test]
     fn test_vector_for_matrix_mul() {
         let testcases: [u128; _] = [0x9f95f3ff7a092a2c465dfdf31225ea00, 0x98871f6b568e38c69b2df2b8fecc46c4];

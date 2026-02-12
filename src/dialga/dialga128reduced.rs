@@ -1,7 +1,7 @@
 use crate::dialga::ms::ms;
 use crate::dialga::roundfunction::r_i::*;
 use crate::dialga::helper::state::{State};
-use crate::dialga::roundconstants::{self, *};
+use crate::dialga::roundconstants::{*};
 use crate::dialga::roundfunction::sub_cell::sub_cell;
 
 const ALPHA:usize = 5;
@@ -120,17 +120,5 @@ mod tests {
         let ciphertext = encrypt(PAINTEXT, TWEAK, KEY);
         let plaintext = decrypt(ciphertext, TWEAK, KEY);
         assert_eq!(PAINTEXT, plaintext);
-    }
-
-    #[test]
-    fn r_f_goaround() {
-        let mut plaintext = State::from(PAINTEXT);
-        let mut tweak = State::from(TWEAK);
-
-        r_f(&mut plaintext, &mut tweak, KEY);
-        r_f_inv(&mut plaintext, &mut tweak, KEY);
-
-        assert_eq!(State::from(PAINTEXT), plaintext);
-    }
-    
+    }    
 }

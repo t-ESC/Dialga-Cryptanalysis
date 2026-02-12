@@ -47,7 +47,7 @@ pub fn byte_permutation_inv(state: &mut State, r: usize) -> State {
 }
 
 mod tests {
-    use crate::dialga::{helper::state::State, roundfunction::permutation::{byte_permutation, byte_permutation_inv}};
+    use super::*;
     #[test]
     fn test_vector_for_permutation_0() {
         let testcases: [u128; _] = [0x9f95f3ff7a092a2c465dfdf31225ea00, 0x98871f6b568e38c69b2df2b8fecc46c4];
