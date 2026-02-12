@@ -16,7 +16,6 @@ const PI_INV:[[usize; 16];4] = [
 
 pub fn byte_permutation(state: &mut State, r: usize) -> State {
     let pre_perm = *state;
-    let r = (r+3)%4; // same as i-1 % 4
     for row in 0..4 {
         for col in 0..4 {
             let idx = (col << 2) + row;
@@ -33,7 +32,6 @@ pub fn byte_permutation(state: &mut State, r: usize) -> State {
 
 pub fn byte_permutation_inv(state: &mut State, r: usize) -> State {
     let pre_perm = *state;
-    let r = (r+3)%4; // same as i-1 % 4
     for row in 0..4 {
         for col in 0..4 {
             let idx = (col << 2) + row;
