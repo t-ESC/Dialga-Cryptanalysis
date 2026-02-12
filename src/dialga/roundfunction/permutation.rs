@@ -24,7 +24,7 @@ pub fn byte_permutation(state: &mut State, r: usize) -> State {
             let pi_col = pi_idx >> 2;
             let pi_row = pi_idx & 0b0011;
 
-            state.0[pi_row][pi_col] = pre_perm.0[row][col];
+            state.0[row][col] = pre_perm.0[pi_row][pi_col];
         }
     }
     *state
@@ -40,8 +40,67 @@ pub fn byte_permutation_inv(state: &mut State, r: usize) -> State {
             let pi_col = pi_idx >> 2;
             let pi_row = pi_idx & 0b0011;
 
-            state.0[pi_row][pi_col] = pre_perm.0[row][col];
+            state.0[row][col] = pre_perm.0[pi_row][pi_col];
         }
     }
     *state
+}
+
+mod tests {
+    use crate::dialga::{helper::state::State, roundfunction::permutation::{byte_permutation, byte_permutation_inv}};
+    #[test]
+    fn test_vector_for_permutation_0() {
+        let testcases: [u128; _] = [0x9f95f3ff7a092a2c465dfdf31225ea00, 0x98871f6b568e38c69b2df2b8fecc46c4];
+        let test_vectors: [u128; _] = [0x2c9f25fd09f300467affea5d2a9512f3, 0xc698ccf28e1fc49b566b462d3887feb8];
+
+        for (i, testcase) in testcases.iter().enumerate() {
+            let mut test_state = State::from(*testcase);
+            byte_permutation(&mut test_state, 0);
+            assert_eq!(State::from(test_vectors[i]), test_state);
+            byte_permutation_inv(&mut test_state, 0);
+            assert_eq!(State::from(testcases[i]), test_state);
+        }
+    }
+
+    #[test]
+    fn test_vector_for_permutation_1() {
+        let testcases: [u128; _] = [0x9f95f3ff7a092a2c465dfdf31225ea00, 0x98871f6b568e38c69b2df2b8fecc46c4];
+        let test_vectors: [u128; _] = [0x259ffd2cf32a1295f30009467a5dffea, 0xcc98f2c6b838fe871fc48e9b562d6b46];
+
+        for (i, testcase) in testcases.iter().enumerate() {
+            let mut test_state = State::from(*testcase);
+            byte_permutation(&mut test_state, 1);
+            assert_eq!(State::from(test_vectors[i]), test_state);
+            byte_permutation_inv(&mut test_state, 1);
+            assert_eq!(State::from(testcases[i]), test_state);
+        }
+    }
+
+    #[test]
+    fn test_vector_for_permutation_2() {
+        let testcases: [u128; _] = [0x9f95f3ff7a092a2c465dfdf31225ea00, 0x98871f6b568e38c69b2df2b8fecc46c4];
+        let test_vectors: [u128; _] = [0x2c25fd9f2a12f395090046f37aea5dff, 0xc6ccf29838feb8878ec49b1f56462d6b];
+
+        for (i, testcase) in testcases.iter().enumerate() {
+            let mut test_state = State::from(*testcase);
+            byte_permutation(&mut test_state, 2);
+            assert_eq!(State::from(test_vectors[i]), test_state);
+            byte_permutation_inv(&mut test_state, 2);
+            assert_eq!(State::from(testcases[i]), test_state);
+        }
+    }
+
+    #[test]
+    fn test_vector_for_permutation_3() {
+        let testcases: [u128; _] = [0x9f95f3ff7a092a2c465dfdf31225ea00, 0x98871f6b568e38c69b2df2b8fecc46c4];
+        let test_vectors: [u128; _] = [0x25462affeaf3099f125d2cf300fd7a95, 0xcc9b386b46b88e98fe2dc61fc4f25687];
+
+        for (i, testcase) in testcases.iter().enumerate() {
+            let mut test_state = State::from(*testcase);
+            byte_permutation(&mut test_state, 3);
+            assert_eq!(State::from(test_vectors[i]), test_state);
+            byte_permutation_inv(&mut test_state, 3);
+            assert_eq!(State::from(testcases[i]), test_state);
+        }
+    }
 }
