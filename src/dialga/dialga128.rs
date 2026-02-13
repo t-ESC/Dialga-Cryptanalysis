@@ -1,8 +1,8 @@
-use crate::dialga::ms::{ms, ms_inv};
+use crate::dialga::ms::{ms};
 use crate::dialga::roundfunction::r_i::*;
-use crate::dialga::helper::state::{self, State};
+use crate::dialga::helper::state::{State};
 use crate::dialga::roundconstants::{*};
-use crate::dialga::roundfunction::sub_cell::{sub_cell, sub_cell_inv};
+use crate::dialga::roundfunction::sub_cell::{sub_cell_inv};
 
 const ALPHA:usize = 4;
 const BETA:usize = ALPHA-1;
@@ -157,7 +157,7 @@ mod tests {
     ];
     const TWEAK:u128 = 0x2233445566778899aabbccddee00ff11;
 
-    fn prepare_tests() -> ([state::State; ALPHA], [state::State; 2], [state::State; BETA]) {
+    fn prepare_tests() -> ([State; ALPHA], [State; 2], [State; BETA]) {
         let mut state_t_rf = [State::from(0); ALPHA];
         let mut state_t_rm = [State::from(0); 2];
         let mut state_t_rb = [State::from(0); BETA];
@@ -180,7 +180,7 @@ mod tests {
     #[test]
     fn test_encryption_test_vector() {
         let ciphertext = encrypt(PAINTEXT, TWEAK, KEY);
-        assert_eq!(0x838407143af9a876fbdc6be378e9045b, ciphertext);
+        assert_eq!(0x838407143af9a876fbdc6be378e9045b, ciphertext); // Only works on reduced, but all vectors from the paper work
     }
 
     #[test]
@@ -208,10 +208,10 @@ mod tests {
     #[test]
     fn test_encryption_rb() {
         let (_, _, state_d_rb) = prepare_tests();
-        let mut test_case = State::from(PAINTEXT);
+        let mut test_case = State::from(0xd7beb80383bb057a8a470b61e6f1cd19);
         r_b(&mut test_case, &state_d_rb, KEY);
         r_b_inv(&mut test_case, &state_d_rb, KEY);
-        assert_eq!(State::from(PAINTEXT), test_case);
+        assert_eq!(State::from(0xd7beb80383bb057a8a470b61e6f1cd19), test_case);
     }
 
 
