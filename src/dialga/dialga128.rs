@@ -80,14 +80,8 @@ fn r_f(state_d: &mut State, t_r: &[State; ALPHA], key: [u128; 2]) {
         r_i(state_d, (2*i-2)%4);
         *state_d ^= key[i%2] ^ C_F[2*(i-1)];
 
-        let state_printout:u128 = State::into(*state_d);
-        println!("{:x}", state_printout);
-
-        r_i(state_d, (2*i-2)%4);
-        *state_d ^= t_r[i-1] ^ C_F[2*(i-1)];
-
-        let state_printout:u128 = State::into(*state_d);
-        println!("{:x}", state_printout);
+        r_i(state_d, (2*i-1)%4);
+        *state_d ^= t_r[i-1] ^ C_F[2*i-1];
     }
 }
 
@@ -118,15 +112,9 @@ fn r_b(state_d: &mut State, t_b: &[State; BETA], key: [u128; 2]) {
 
 fn r_f_inv(state_d: &mut State, t_r: &[State; ALPHA], key: [u128; 2]) {
     for i in (1..=ALPHA).rev() {
-        let state_printout:u128 = State::into(*state_d);
-        println!("{:x}", state_printout);
-
-        *state_d ^= t_r[i-1] ^ C_F[2*(i-1)];
-        r_i_inv(state_d, (2*i-2)%4);
-
-        let state_printout:u128 = State::into(*state_d);
-        println!("{:x}", state_printout);
-        
+        *state_d ^= t_r[i-1] ^ C_F[2*i-1];
+        r_i_inv(state_d, (2*i-1)%4);
+       
         *state_d ^= key[i%2] ^ C_F[2*(i-1)];
         r_i_inv(state_d, (2*i-2)%4);
     }
@@ -197,10 +185,12 @@ mod tests {
     #[test]
     fn test_encryption_rf() {
         let (state_d_rf, _, _) = prepare_tests();
-        let mut test_case = State::from(PAINTEXT);
+        let mut test_case = State::from(PAINTEXT ^ KEY[0] ^ KEY[1] ^ TWEAK);
         r_f(&mut test_case, &state_d_rf, KEY);
+        let test_case_u128:u128 = State::into(test_case);
+        assert_eq!(0x4c31411fc08dd78da9c94db8175ca087, test_case_u128);
         r_f_inv(&mut test_case, &state_d_rf, KEY);
-        assert_eq!(State::from(PAINTEXT), test_case);
+        assert_eq!(State::from(PAINTEXT ^ KEY[0] ^ KEY[1] ^ TWEAK), test_case);
     }
 
     #[test]
