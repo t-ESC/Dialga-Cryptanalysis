@@ -92,7 +92,8 @@ fn r_m(state_d: &mut State, t_m: &[State; 2], key: [u128; 2]) {
 
     r_i(state_d, (2*ALPHA + 1)%4);
     let mut t_m_1 = t_m[1];
-    *state_d ^= ms(&mut t_m_1) ^ C_M[1];
+    ms(&mut t_m_1);
+    *state_d ^= t_m_1 ^ C_M[1];
 }
 
 fn r_b(state_d: &mut State, t_b: &[State; BETA], key: [u128; 2]) {
@@ -196,10 +197,12 @@ mod tests {
     #[test]
     fn test_encryption_rm() { // only for r_m --> tested for correctness already
         let (_, state_d_rm, _) = prepare_tests();
-        let mut test_case = State::from(PAINTEXT);
+        let mut test_case = State::from(0x4c31411fc08dd78da9c94db8175ca087);
         r_m(&mut test_case, &state_d_rm, KEY);
+        let test_case_u128:u128 = State::into(test_case);
+        assert_eq!(0xd7beb80383bb057a8a470b61e6f1cd19, test_case_u128);
         r_m_inv(&mut test_case, &state_d_rm, KEY);
-        assert_eq!(State::from(PAINTEXT), test_case);
+        assert_eq!(State::from(0x4c31411fc08dd78da9c94db8175ca087), test_case);
     }
 
     #[test]
