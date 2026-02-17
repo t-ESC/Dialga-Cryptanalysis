@@ -2,7 +2,7 @@ use crate::dialga::ms::{ms};
 use crate::dialga::roundfunction::r_i::*;
 use crate::dialga::helper::state::{State};
 use crate::dialga::roundconstants::{*};
-use crate::dialga::roundfunction::sub_cell::{sub_cell_inv};
+use crate::dialga::roundfunction::sub_cell::{sub_cell};
 
 const ALPHA:usize = 4;
 const BETA:usize = ALPHA-1;
@@ -51,8 +51,8 @@ fn tweak_schedule(tweak: State, key: [u128; 2], state_t_rf: &mut [State; ALPHA],
     let mut tmp_state = state_t_rf[ALPHA-1];
 
     //R_M Schedule
-    state_t_rm[0] = sub_cell_inv(&mut tmp_state);
-    sub_cell_inv(&mut tmp_state);
+    state_t_rm[0] = sub_cell(&mut tmp_state);
+    sub_cell(&mut tmp_state);
     tmp_state = tmp_state ^ key[(ALPHA -1)%2]; 
     state_t_rm[1] = r_i_inv(&mut tmp_state, (ALPHA-1)%4);
 
@@ -107,7 +107,7 @@ fn r_b(state_d: &mut State, t_b: &[State; BETA], key: [u128; 2]) {
         ms(&mut t_b_i);
         *state_d ^= t_b_i ^ C_B[2*i -1];
     }
-    sub_cell_inv(state_d);
+    sub_cell(state_d);
     *state_d ^= key[0] ^ key[1];
 }
 
@@ -132,7 +132,7 @@ fn r_m_inv(state_d: &mut State, t_m: &[State; 2], key: [u128; 2]) {
 
 fn r_b_inv(state_d: &mut State, t_b: &[State; BETA], key: [u128; 2]) {
     *state_d ^= key[0] ^ key[1];
-    sub_cell_inv(state_d);
+    sub_cell(state_d);
 
     // Data Schedule
     for i in (1..=BETA).rev() {

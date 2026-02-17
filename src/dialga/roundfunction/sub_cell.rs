@@ -18,8 +18,8 @@ pub fn permute_bits(byte: u8, i: usize) -> u8 {
     let mut result = 0_u8;
 
     for j in 0..8 {
-        let bit_value = (byte >> (7-j)) & 0b1; // Isolate bit from each position (MSB-first)
-        result |= bit_value << (7-PBI[i][j]); // 7- because we are working in MSB-first, index 7 is lowest bit and 0 is highest
+        let bit_value = (byte >> (7-PBI[i][j])) & 0b1; // Isolate bit from each position (MSB-first)
+        result |= bit_value << (7-j); // 7- because we are working in MSB-first, index 7 is lowest bit and 0 is highest
     }
 
     result
@@ -29,8 +29,8 @@ pub fn permute_bits_inv(byte: u8, i: usize) -> u8 {
     let mut result = 0_u8;
 
     for j in 0..8 {
-        let bit_value = (byte >> (7-j)) & 0b00000001; // Isolate bit from each position (MSB-first)
-        result |= bit_value << (7-PBI_INV[i][j]);
+        let bit_value = (byte >> (7-PBI_INV[i][j])) & 0b00000001; // Isolate bit from each position (MSB-first)
+        result |= bit_value << (7-j);
         
     }
     result
@@ -60,28 +60,6 @@ pub fn sub_cell(state: &mut State) -> State {
     *state
 }
 
-pub fn sub_cell_inv(state: &mut State) -> State{
-    for row in 0..4 {
-        for col in 0..4 {
-            let i = row;
-            let mut state_i = state.0[row][col];
-            state_i = permute_bits_inv(state_i, i);
-
-            let mut high_bits = state_i >> 4;
-            let mut low_bits = state_i & 0b00001111;
-
-            high_bits = SB0[high_bits as usize];
-            low_bits = SB0[low_bits as usize];
-        
-            state_i = (high_bits << 4) + low_bits;
-            state_i = permute_bits(state_i, i);
-
-            state.0[row][col] = state_i;
-        }
-    }
-    *state
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -92,7 +70,7 @@ mod tests {
 
         for (i, testcase) in testcases.iter().enumerate() {
             let mut test_state = State::from(*testcase);
-            sub_cell_inv(&mut test_state);
+            sub_cell(&mut test_state);
             assert_eq!(State::from(test_vectors[i]), test_state);
         }
     }
