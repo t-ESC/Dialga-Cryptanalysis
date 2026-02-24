@@ -185,12 +185,12 @@ mod tests {
 
     #[test]
     fn test_encryption_rf() {
-        let (state_d_rf, _, _) = prepare_tests();
+        let (state_t_rf, _, _) = prepare_tests();
         let mut test_case = State::from(PAINTEXT ^ KEY[0] ^ KEY[1] ^ TWEAK);
-        r_f(&mut test_case, &state_d_rf, KEY);
+        r_f(&mut test_case, &state_t_rf, KEY);
         let test_case_u128:u128 = State::into(test_case);
         assert_eq!(0x4c31411fc08dd78da9c94db8175ca087, test_case_u128);
-        r_f_inv(&mut test_case, &state_d_rf, KEY);
+        r_f_inv(&mut test_case, &state_t_rf, KEY);
         assert_eq!(State::from(PAINTEXT ^ KEY[0] ^ KEY[1] ^ TWEAK), test_case);
     }
 
