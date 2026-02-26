@@ -141,25 +141,23 @@ fn r_f(state_d: &mut State, t0_r: &[State; ALPHA], t1_0: &State, t1_r: &[State; 
         if i == 1 {
             *state_d ^= *t1_0 ^ key[i%2] ^ C_F[2*(i-1)];
         } else {
-            *state_d ^= t1_r[i-2] ^ key[i%2] ^ C_F[2*(i-1)];
-        }
-        
+            *state_d ^= t1_r[i-2] ^ C_F[2*(i-1)];
+        }        
 
         r_i(state_d, (2*i-1)%4);
-        *state_d ^= t0_r[i-1] ^ C_F[2*(i-1)];
-        
+        *state_d ^= t0_r[i-1] ^ C_F[2*i-1];        
     }
 }
 
 fn r_f_inv(state_d: &mut State, t0_r: &[State; ALPHA], t1_0: &State, t1_r: &[State; ALPHA-1], key: [u128; 2]) {
     for i in (1..=ALPHA).rev() {
-        *state_d ^= t0_r[i-1] ^ C_F[2*(i-1)];
+        *state_d ^= t0_r[i-1] ^ C_F[2*i-1];
         r_i_inv(state_d, (2*i-1)%4);
 
         if i == 1 {
             *state_d ^= *t1_0 ^ key[i%2] ^ C_F[2*(i-1)];
         } else {
-            *state_d ^= t1_r[i-2] ^ key[i%2] ^ C_F[2*(i-1)];
+            *state_d ^= t1_r[i-2] ^ C_F[2*(i-1)];
         }
         r_i_inv(state_d, (2*i-2)%4);
 
@@ -255,6 +253,12 @@ mod tests {
         assert_eq!(State::from(TWEAK[0]), state_t0_rb[BETA-1]);
         assert_eq!(State::from(TWEAK[1]), state_t1_rb[BETA]);
 
+        // println!("{:x}", TWEAK[1]);
+        // for tweak in state_t1_rf {
+        //     let state:u128 = State::into(tweak);
+        //     println!("{:x}", state);   
+        // }
+
         return(state_t0_rf, state_t1_rf, state_t0_rm, state_t1_rm, state_t0_rb, state_t1_rb);
 
 
@@ -273,7 +277,7 @@ mod tests {
         let mut test_case = State::from(PAINTEXT ^ KEY[0] ^ KEY[1] ^ TWEAK[0]);
         r_f(&mut test_case, &state_t0_rf, &State::from(TWEAK[1]), &state_t1_rf, KEY);
         let test_case_u128:u128 = State::into(test_case);
-        // TODO: Get Testvector from Implementation
+        assert_eq!(0x70d4ed7e8620b096b86f7f2ada600dc1, test_case_u128);
         r_f_inv(&mut test_case, &state_t0_rf, &State::from(TWEAK[1]), &state_t1_rf, KEY);
         assert_eq!(State::from(PAINTEXT ^ KEY[0] ^ KEY[1] ^ TWEAK[0]), test_case);
     }
@@ -284,7 +288,7 @@ mod tests {
         let mut test_case = State::from(0xdc6ddc2f5b2bf7778d678b646e6be7be_u128);
         r_m(&mut test_case, &state_t0_rm, &state_t1_rm);
         let test_case_u128:u128 = State::into(test_case);
-        // assert_eq!(0x76946ec3a4e948cb34cb8200bf8aef5c, test_case_u128); // Not passing this test!!
+        // assert_eq!(0x70d4ed7e8620b096b86f7f2ada600dc1, test_case_u128); // Not passing this test!!
         r_m_inv(&mut test_case, &state_t0_rm, &state_t1_rm);
         assert_eq!(State::from(0xdc6ddc2f5b2bf7778d678b646e6be7be_u128), test_case);
 
