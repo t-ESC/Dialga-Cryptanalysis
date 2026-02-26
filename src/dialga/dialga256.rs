@@ -187,10 +187,10 @@ fn r_m_inv(state_d: &mut State, t0_m: &[State; 2], t1_m: &State) {
 fn r_b(state_d: &mut State, t0_b: &[State; BETA], t1_b: &[State; BETA+1],key: [u128; 2]) {
 
     for i in 1..=BETA {
-        r_i(state_d, (2*(ALPHA+1))%4);
+        r_i(state_d, (2*(ALPHA+i))%4);
         let mut t1_b_i = t1_b[i-1];
         ms(&mut t1_b_i);
-        *state_d ^= t1_b_i ^ C_B[2*(i-1)]; 
+        *state_d ^= t1_b_i ^ C_B[2*(i-1)];
 
 
         r_i(state_d, (2*(ALPHA+i)+1)%4);
@@ -221,7 +221,7 @@ fn r_b_inv(state_d: &mut State, t0_b: &[State; BETA], t1_b: &[State; BETA+1],key
         let mut t1_b_i = t1_b[i-1];
         ms(&mut t1_b_i);
         *state_d ^= t1_b_i ^ C_B[2*(i-1)]; 
-        r_i_inv(state_d, (2*(ALPHA+1))%4);
+        r_i_inv(state_d, (2*(ALPHA+i))%4);
     }
 }
 
