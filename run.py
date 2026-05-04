@@ -3,11 +3,19 @@ from Result_Parser import Result_Parser
 import subprocess
 from pycryptosat import Solver
 
+MAX_SOLS = 4000
+
 def main():
     # 0xff000000000000000000000000000000 for reference
-    # builder = SAT_Builder(0xaa000000aa000000aa000000aa000000)
-    builder = SAT_Builder(0xaa00000000aa00000000aa00000000aa)
+    # builder = SAT_Builder(0xaa00000000aa00000000aa00000000aa)
+    builder = SAT_Builder(0x000000000000000000000000000004)
+    
     builder.add_subcell()
+    builder.add_permutation(0)
+    builder.add_matrix_mul()
+    builder.add_subcell()
+    builder.add_permutation(1)
+    builder.add_matrix_mul()
     
     filename = "assertion.cnf"
     builder.to_cnf(filename)
@@ -19,10 +27,27 @@ def main():
         else:
             s.add_clause(clause.variables)
 
-    sat, solution = s.solve()
+    solutions = [] # to find all solutions, add disallow previous solution: add it inverted to clauses
+    while True:
+        sat, solution = s.solve()
+        if not sat:
+            break
+
+        solutions.append(solution)
+        clause = []
+        for var in range(1, len(solution)):
+            if solution[var]:
+                clause.append(-var)
+            else:
+                clause.append(var)
+        
+        s.add_clause(clause)
+
+        if len(solutions) >= MAX_SOLS:
+            break
 
     parser = Result_Parser(
-        solution,
+        solutions,
         builder.label_to_variable,
         builder.variable_to_label
     )

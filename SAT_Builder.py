@@ -159,8 +159,7 @@ class SAT_Builder:
 
         self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
-        # ToDo: SBox
-        # m=32 sboxes in parallel
+        self._add_sbox()
 
         #Backward Bit-Permutation
         self.new_state()
@@ -176,7 +175,7 @@ class SAT_Builder:
                     -self.label_to_variable[x]
                 ],xor=True))
 
-        # self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
+        self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
     def add_matrix_mul(self):
         self.new_state()
@@ -253,7 +252,7 @@ class SAT_Builder:
         
         self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
-    def add_sbox(self):
+    def _add_sbox(self):
         DDT = [
             [16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 2, 4, 0, 2, 2, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0],
@@ -392,5 +391,5 @@ class SAT_Builder:
 
                                 self.clauses.append(clause)
                 
-
+        self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 

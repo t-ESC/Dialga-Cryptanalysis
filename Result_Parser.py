@@ -27,7 +27,7 @@ class Result_Parser:
         self.variable_to_label = variable_to_label
         self.results = cryptominisat_output
 
-    def __init__(self, pycryptosat_solution: tuple, label_to_variable:{}, variable_to_label:{}):
+    def __init__(self, pycryptosat_solution: [tuple], label_to_variable:{}, variable_to_label:{}):
         self.label_to_variable = label_to_variable
         self.variable_to_label = variable_to_label
         self.results = pycryptosat_solution
@@ -42,21 +42,25 @@ class Result_Parser:
         pass
 
     def _parse_tuple(self):
-        num_states = 0
-        while self.label_to_variable.get(f"x_{num_states}_0"):
-            num_states += 1
+        for idx, result in enumerate(self.results):
+            print(f"Trail {idx+1}:")
+            num_states = 0
+            while self.label_to_variable.get(f"x_{num_states}_0"):
+                num_states += 1
 
-        for state in range(num_states):
-            state_bool = [self.results[self.label_to_variable[f"x_{state}_{i}"]] for i in range(128)]
-            if self.label_to_variable.get(f"p_{state}_0_0"):
-                prob = 0
-                for m in range(32):
-                    for p in range(3):
-                        if self.results[self.label_to_variable[f"p_{state}_{m}_{p}"]] > 0:
-                            prob += 1
-                print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}", "with probability:", prob)
-            else:
-                print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}")
+            for state in range(num_states):
+                state_bool = [result[self.label_to_variable[f"x_{state}_{i}"]] for i in range(128)]
+                if self.label_to_variable.get(f"p_{state}_0_0"):
+                    prob = 0
+                    for m in range(32):
+                        for p in range(3):
+                            if result[self.label_to_variable[f"p_{state}_{m}_{p}"]] > 0:
+                                prob += 1
+                    print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}", "with probability:", prob) # prob is -log2(probability)
+                else:
+                    print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}")
+
+            print()
 
 def be_bits_to_int(bits: list[bool]) -> int:
     n = 0
