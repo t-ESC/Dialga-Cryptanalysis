@@ -48,7 +48,15 @@ class Result_Parser:
 
         for state in range(num_states):
             state_bool = [self.results[self.label_to_variable[f"x_{state}_{i}"]] for i in range(128)]
-            print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}")
+            if self.label_to_variable.get(f"p_{state}_0_0"):
+                prob = 0
+                for m in range(32):
+                    for p in range(3):
+                        if self.results[self.label_to_variable[f"p_{state}_{m}_{p}"]] > 0:
+                            prob += 1
+                print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}", "with probability:", prob)
+            else:
+                print(f"State {state}:", f"{be_bits_to_int(state_bool):032x}")
 
 def be_bits_to_int(bits: list[bool]) -> int:
     n = 0

@@ -140,9 +140,9 @@ class SAT_Builder:
         self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
         
     def add_subcell(self):
-        PBI_INV = [7, 2, 5, 0, 3, 6, 1, 4, 15, 10, 13, 8, 11, 14, 9, 12, 23, 18, 21, 16, 19, 22, 17, 20, 31, 26, 29, 24, 27, 30, 25, 28, 36, 35, 34, 37, 32, 39, 38, 33, 44, 43, 42, 45, 40, 47, 46, 41, 52, 51, 50, 53, 48, 55, 54, 49, 60, 59, 58, 61, 56, 63, 62, 57, 69, 64, 71, 70, 65, 68, 67, 66, 77, 72, 79, 78, 73, 76, 75, 74, 85, 80, 87, 86, 81, 84, 83, 82, 93, 88, 95, 94, 89, 92, 91, 90, 102, 101, 96, 99, 98, 97, 100, 103, 110, 109, 104, 107, 106, 105, 108, 111, 118, 117, 112, 115, 114, 113, 116, 119, 126, 125, 120, 123, 122, 121, 124, 127]        
-        PBI = [7, 2, 5, 0, 3, 6, 1, 4, 15, 10, 13, 8, 11, 14, 9, 12, 23, 18, 21, 16, 19, 22, 17, 20, 31, 26, 29, 24, 27, 30, 25, 28, 34, 33, 36, 39, 38, 37, 32, 35, 42, 41, 44, 47, 46, 45, 40, 43, 50, 49, 52, 55, 54, 53, 48, 51, 58, 57, 60, 63, 62, 61, 56, 59, 69, 68, 71, 66, 65, 64, 67, 70, 77, 76, 79, 74, 73, 72, 75, 78, 85, 84, 87, 82, 81, 80, 83, 86, 93, 92, 95, 90, 89, 88, 91, 94, 96, 103, 102, 97, 100, 99, 98, 101, 104, 111, 110, 105, 108, 107, 106, 109, 112, 119, 118, 113, 116, 115, 114, 117, 120, 127, 126, 121, 124, 123, 122, 125]
-
+        # PBI = [7, 2, 5, 0, 3, 6, 1, 4, 15, 10, 13, 8, 11, 14, 9, 12, 23, 18, 21, 16, 19, 22, 17, 20, 31, 26, 29, 24, 27, 30, 25, 28, 36, 35, 34, 37, 32, 39, 38, 33, 44, 43, 42, 45, 40, 47, 46, 41, 52, 51, 50, 53, 48, 55, 54, 49, 60, 59, 58, 61, 56, 63, 62, 57, 69, 64, 71, 70, 65, 68, 67, 66, 77, 72, 79, 78, 73, 76, 75, 74, 85, 80, 87, 86, 81, 84, 83, 82, 93, 88, 95, 94, 89, 92, 91, 90, 102, 101, 96, 99, 98, 97, 100, 103, 110, 109, 104, 107, 106, 105, 108, 111, 118, 117, 112, 115, 114, 113, 116, 119, 126, 125, 120, 123, 122, 121, 124, 127]        
+        PBI = [4, 1, 6, 3, 0, 5, 2, 7, 9, 14, 15, 8, 13, 10, 11, 12, 18, 19, 20, 17, 22, 23, 16, 21, 31, 28, 25, 26, 27, 24, 29, 30, 36, 33, 38, 35, 32, 37, 34, 39, 41, 46, 47, 40, 45, 42, 43, 44, 50, 51, 52, 49, 54, 55, 48, 53, 63, 60, 57, 58, 59, 56, 61, 62, 68, 65, 70, 67, 64, 69, 66, 71, 73, 78, 79, 72, 77, 74, 75, 76, 82, 83, 84, 81, 86, 87, 80, 85, 95, 92, 89, 90, 91, 88, 93, 94, 100, 97, 102, 99, 96, 101, 98, 103, 105, 110, 111, 104, 109, 106, 107, 108, 114, 115, 116, 113, 118, 119, 112, 117, 127, 124, 121, 122, 123, 120, 125, 126]
+        PBI_INV = [4, 1, 6, 3, 0, 5, 2, 7, 11, 8, 13, 14, 15, 12, 9, 10, 22, 19, 16, 17, 18, 23, 20, 21, 29, 26, 27, 28, 25, 30, 31, 24, 36, 33, 38, 35, 32, 37, 34, 39, 43, 40, 45, 46, 47, 44, 41, 42, 54, 51, 48, 49, 50, 55, 52, 53, 61, 58, 59, 60, 57, 62, 63, 56, 68, 65, 70, 67, 64, 69, 66, 71, 75, 72, 77, 78, 79, 76, 73, 74, 86, 83, 80, 81, 82, 87, 84, 85, 93, 90, 91, 92, 89, 94, 95, 88, 100, 97, 102, 99, 96, 101, 98, 103, 107, 104, 109, 110, 111, 108, 105, 106, 118, 115, 112, 113, 114, 119, 116, 117, 125, 122, 123, 124, 121, 126, 127, 120]
         #Forward Bit-Permutation
         self.new_state()
         for i in range(0, 128):
@@ -176,7 +176,7 @@ class SAT_Builder:
                     -self.label_to_variable[x]
                 ],xor=True))
 
-        self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
+        # self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
     def add_matrix_mul(self):
         self.new_state()
@@ -275,6 +275,8 @@ class SAT_Builder:
 
         self.new_state()
         for m in range(0, 32):
+            for i in range(3):
+                self.add_variable(f"p_{self.current_state_number}_{m}_{i}")
             for input_diff in range(16):
                 input_bits = [(input_diff >> i) & 1 for i in range(3, -1, -1)]
                 for output_diff in range(16):
@@ -297,7 +299,98 @@ class SAT_Builder:
                                     case 1:
                                         clause.append(-self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
                             
-                            self.clauses.append(clause) 
+                            self.clauses.append(clause)
+                        
+                        case 2:
+                            for p in range(pow(2, 3)):
+                                clause = Clause()
+                                p_bits = [(p >> i) & 1 for i in range(3)]
+                                if p_bits == [1, 1, 1]:
+                                    continue
+                                
+                                for i in range(4):
+                                    match(input_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"x_{self.current_state_number - 1}_{4*m + i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"x_{self.current_state_number - 1}_{4*m + i}"])
+
+                                for i in range(4):
+                                    match(output_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
+
+                                for i in range(3):
+                                    match(p_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"p_{self.current_state_number}_{m}_{i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"p_{self.current_state_number}_{m}_{i}"])
+
+                                self.clauses.append(clause)
+
+
+                        case 4:
+                            for p in range(pow(2, 3)):
+                                clause = Clause()
+                                p_bits = [(p >> i) & 1 for i in range(3)]
+                                if p_bits == [0, 1, 1]:
+                                    continue
+                                
+                                for i in range(4):
+                                    match(input_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"x_{self.current_state_number - 1}_{4*m + i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"x_{self.current_state_number - 1}_{4*m + i}"])
+
+                                for i in range(4):
+                                    match(output_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
+
+                                for i in range(3):
+                                    match(p_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"p_{self.current_state_number}_{m}_{i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"p_{self.current_state_number}_{m}_{i}"])
+
+                                self.clauses.append(clause)
+
+                        case 16:
+                            for p in range(pow(2, 3)):
+                                clause = Clause()
+                                p_bits = [(p >> i) & 1 for i in range(3)]
+                                if p_bits == [0, 0, 0]:
+                                    continue
+                                
+                                for i in range(4):
+                                    match(input_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"x_{self.current_state_number - 1}_{4*m + i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"x_{self.current_state_number - 1}_{4*m + i}"])
+
+                                for i in range(4):
+                                    match(output_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"x_{self.current_state_number}_{4*m + i}"])
+
+                                for i in range(3):
+                                    match(p_bits[i]):
+                                        case 0:
+                                            clause.append(self.label_to_variable[f"p_{self.current_state_number}_{m}_{i}"])
+                                        case 1:
+                                            clause.append(-self.label_to_variable[f"p_{self.current_state_number}_{m}_{i}"])
+
+                                self.clauses.append(clause)
                 
 
 

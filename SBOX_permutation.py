@@ -14,11 +14,20 @@ PBI_INV = [
 state = [i for i in range(0, 128)]
 new_state = []
 
-for i in range(0, 16):
-	row = (i >> 2)
-	for j in range(0, 8):
-		new_state.append(PBI[row][j] + (i*8))
+for row in range(4):
+	for col in range(4):
+		index = 4*row + col
+		for bit in range(8):
+			bit_index = (4*row + col)*8 + bit
+			new_bit = 7-PBI[row][bit]
+			# new_state.append(new_bit)
+			new_state.append((4*row + col)*8 + PBI_INV[col][bit])
+
+# for i in range(0, 16):
+# 	row = (i >> 2)
+# 	for j in range(0, 8):
+# 		new_state.append(PBI[row][j] + (i*8))
 
 
-print(state)
+# print(state)
 print(new_state)
