@@ -1,5 +1,6 @@
 import subprocess
 import re
+import itertools
 
 class Clause:
     def __init__(self, variables=None, xor=False):
@@ -37,6 +38,7 @@ class SAT_Builder:
         self.current_state = []
         self.current_state_number = 0
         self.round_number = 0
+        self.auxilary_variables = []
         self.start_state(start_value)
         
 
@@ -407,3 +409,41 @@ class SAT_Builder:
                 
         self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
+
+    def add_probability_constraint(self, k_bound:int = 4):
+        # my (x1, ... xn) I need to find all probability variables
+        p_is = []
+        for i in range(self.current_state_number + 1):
+            if self.label_to_variable.get(f"p_{i}_0_0"):
+                for m in range(32):
+                    for p in range(3):
+                        p_is.append(f"p_{i}_{m}_{p}")
+
+        X = [self.label_to_variable[var] for var in p_is]
+
+        # add auxilary variables
+        S = []
+        for x in range(len(p_is)-1):
+            s_k = []
+            for k in range(k_bound):
+                variable = f"s_{self.current_state_number}_{x}_{k}"
+                self.add_variable(variable)
+                s_k.append(self.label_to_variable[variable])
+            S.append(s_k)
+
+        self.auxilary_variables = list(itertools.chain.from_iterable(S))
+
+        self.clauses.append(Clause([-X[0], S[0][0]]))
+
+        for j in range(1, k_bound):
+            self.clauses.append(Clause([-S[0][j]]))
+
+        for i in range(1, len(X)-1):
+            self.clauses.append(Clause([-X[i], S[i][0]]))
+            self.clauses.append(Clause([-S[i-1][1], S[i][1]]))
+            for j in range(1, k_bound):
+                self.clauses.append(Clause([-X[i], -S[i-1][j-1], S[i][j]]))
+                self.clauses.append(Clause([-S[i-1][j], S[i][j]]))
+            self.clauses.append(Clause([-X[i], -S[i][k_bound-1]]))
+        
+        self.clauses.append(Clause([-X[len(X)-1], -S[len(X)-2][k_bound-1]]))

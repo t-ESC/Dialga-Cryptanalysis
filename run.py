@@ -3,19 +3,18 @@ from Result_Parser import Result_Parser
 import subprocess
 from pycryptosat import Solver
 
-MAX_SOLS = 4000
+MAX_SOLS = 100
 
 def main():
     # 0xff000000000000000000000000000000 for reference
     # builder = SAT_Builder(0xaa00000000aa00000000aa00000000aa)
-    builder = SAT_Builder(0x000000000000000000000000000004)
-    
-    builder.add_subcell()
-    builder.add_permutation(0)
-    builder.add_matrix_mul()
-    builder.add_subcell()
-    builder.add_permutation(1)
-    builder.add_matrix_mul()
+    builder = SAT_Builder(0x000000000000000000000000000002)
+
+    # builder.add_permutation(0)
+
+    builder._add_sbox()
+    builder._add_sbox()
+    builder.add_probability_constraint()
     
     filename = "assertion.cnf"
     builder.to_cnf(filename)
@@ -36,6 +35,8 @@ def main():
         solutions.append(solution)
         clause = []
         for var in range(1, len(solution)):
+            if var in builder.auxilary_variables: #  Ignore auxilary variables in solutions
+                continue
             if solution[var]:
                 clause.append(-var)
             else:
@@ -53,24 +54,6 @@ def main():
     )
 
     parser.parse()
-
-    # print(builder.clauses)
-    # filename = "assertion.cnf"
-    # builder.to_cnf(filename)
-
-    # output = subprocess.run([
-    #     "/home/theo/Thesis/SAT/cryptominisat5", 
-    #     "--maxsol", "20",
-    #     "--verbstat", "0", 
-    #     filename], capture_output=True)
-    # # print(output)
-    # parser = Result_Parser(
-    #     output.stdout.decode("utf-8"), 
-    #     builder.label_to_variable, 
-    #     builder.variable_to_label
-    #     )
-
-    # parser.parse()
 
 
 
