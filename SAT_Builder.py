@@ -86,6 +86,20 @@ class SAT_Builder:
             self.add_variable(label)
             self.current_state.append(label)
 
+    def print_clause(self, clause:Clause):
+        print_string = ""
+        if clause.xor:
+            print_string += "x"
+        print_string += "( "
+        
+        for var in clause.variables:
+            if var < 0:
+                print_string += "¬"
+            print_string += f"{self.variable_to_label[abs(var)]} "
+        
+
+        print_string += ")"
+        print(print_string)
 
     def add_permutation(self, r:int):
         PI = [
