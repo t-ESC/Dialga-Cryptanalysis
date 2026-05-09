@@ -103,6 +103,16 @@ class SAT_Builder:
         print_string += ")"
         print(print_string)
 
+    def add_round(self, r:int):
+        self.add_subcell()
+        self.add_permutation(r)
+        self.add_matrix_mul()
+
+    def add_round_inv(self, r:int):
+        self.add_matrix_mul()
+        self.add_permutation_rev(r)
+        self.add_subcell()
+
     def add_permutation(self, r:int):
         PI = [
             [7, 0, 13, 10, 5, 2, 15, 8, 4, 3, 14, 9, 6, 1, 12, 11],
@@ -431,7 +441,7 @@ class SAT_Builder:
                 s_k.append(self.label_to_variable[variable])
             S.append(s_k)
 
-        self.auxilary_variables = list(itertools.chain.from_iterable(S))
+        self.auxilary_variables += list(itertools.chain.from_iterable(S))
 
         self.clauses.append(Clause([-X[0], S[0][0]]))
 

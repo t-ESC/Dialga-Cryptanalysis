@@ -3,23 +3,24 @@ from Result_Parser import Result_Parser
 import subprocess
 from pycryptosat import Solver
 
-MAX_SOLS = 100
+MAX_SOLS = 20
 
 def main():
     # 0xff000000000000000000000000000000 for reference
     # builder = SAT_Builder(0xaa00000000aa00000000aa00000000aa)
-    builder = SAT_Builder(0x000000000000000000000000000002)
+    builder = SAT_Builder(0x2)
 
-    # builder.add_permutation(0)
-
-    builder._add_sbox()
-    builder._add_sbox()
-    builder.add_probability_constraint()
+    builder.add_round(0)
+    builder.add_round(1)
+    builder.add_round(2)
+    builder.add_round(3)
+    # builder.add_round(0)
+    builder.add_probability_constraint(44)
     
     filename = "assertion.cnf"
     builder.to_cnf(filename)
 
-    s = Solver()
+    s = Solver(verbose=0, threads=16)
     for clause in builder.clauses:
         if clause.xor:
             s.add_xor_clause([abs(var) for var in clause.variables], False)
@@ -30,7 +31,10 @@ def main():
     while True:
         sat, solution = s.solve()
         if not sat:
+            print("UnSAT")
             break
+        else:
+            print("Solution found")
 
         solutions.append(solution)
         clause = []
