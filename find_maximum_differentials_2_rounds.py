@@ -21,7 +21,7 @@ def find_maximum_differentials_for_input_diff(input_diff:int):
     probabilities = [0, 0, 0, 0]
     for first_round in range(4):
         sat = False
-        prob = 9
+        prob = 8
         while not sat:
             builder = SAT_Builder(input_diff)
             ## Rounds to be tested
