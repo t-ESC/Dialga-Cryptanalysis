@@ -7,7 +7,7 @@ from tqdm import tqdm
 # pd.DataFrame([{"Input_diff": "0x1", "Round0": 1, "Round1": 2, "Round3": 3}])
 
 def solve_SAT_problem(SAT_problem: SAT_Builder) -> bool:
-    s = Solver(verbose = 0, threads = 5)
+    s = Solver(verbose = 0, threads = 4)
     for clause in SAT_problem.clauses:
         if clause.xor:
             s.add_xor_clause([abs(var) for var in clause.variables], False)
@@ -21,7 +21,7 @@ def find_maximum_differentials_for_input_diff(input_diff:int):
     probabilities = [0, 0, 0, 0]
     for first_round in range(4):
         sat = False
-        prob = 30
+        prob = 26
         while not sat:
             builder = SAT_Builder(input_diff)
             ## Rounds to be tested
