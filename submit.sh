@@ -20,4 +20,4 @@
 #BSUB -o Output_%J.out 
 #BSUB -e Output_%J.err 
 
-/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/find_maximum_differentials_3_rounds.py
+/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/find_maximum_differentials_4_rounds.py
