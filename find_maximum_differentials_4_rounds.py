@@ -21,7 +21,7 @@ def find_maximum_differentials_for_input_diff(input_diff:int):
     probabilities = [0, 0, 0, 0]
     for first_round in tqdm(range(4), leave=False):
         sat = False
-        prob = 45
+        prob = 40
         while not sat:
             builder = SAT_Builder(input_diff)
             ## Rounds to be tested
@@ -36,8 +36,8 @@ def find_maximum_differentials_for_input_diff(input_diff:int):
             else:
                 prob += 1
 
-            if prob > 55:
-                prob = -55
+            if prob > 44:
+                prob = 60
                 break
         
         probabilities[first_round] = prob
@@ -64,6 +64,6 @@ def main():
                     })
         
 
-    pd.DataFrame(data).to_csv("output/4_round_differentials")
+    pd.DataFrame(data).to_csv("output/4_round_differentials_low")
 if __name__ == "__main__":
     main()
