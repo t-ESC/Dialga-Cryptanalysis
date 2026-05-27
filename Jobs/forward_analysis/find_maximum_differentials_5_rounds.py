@@ -15,6 +15,8 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int) -> bool:
     builder.add_round(first_round)
     builder.add_round((first_round + 1) % 4)
     builder.add_round((first_round + 2) % 4)
+    builder.add_round((first_round + 3) % 4)
+    builder.add_round((first_round + 4) % 4)
     builder.add_probability_constraint(probability)
     s = Solver(verbose = 0, threads = 16)
     for clause in builder.clauses:
@@ -30,7 +32,7 @@ def find_maximum_differentials_for_input_diff(input_diff:int):
     probabilities = [0, 0, 0, 0]
     for first_round in range(4):
         sat = False
-        rough_prob = 10
+        rough_prob = 40
         while not sat:
             if solve_SAT_problem(input_diff, first_round, rough_prob):
                 sat = True
@@ -71,6 +73,6 @@ def main():
                     
     
     os.makedirs("output", exist_ok=True)
-    pd.DataFrame(data).to_csv("output/3_round_differentials")
+    pd.DataFrame(data).to_csv("output/4_round_differentials")
 if __name__ == "__main__":
     main()

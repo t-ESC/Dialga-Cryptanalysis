@@ -7,7 +7,7 @@
 ### -- as1 
 #BSUB -n 16
 #BSUB -R "rusage[mem=512MB]"
-#BSUB -W 24:00 
+#BSUB -W 72:00 
 ### -- specify that the cores must be on the same host -- 
 #BSUB -o Output_%J.out
 #BSUB -e Output_%J.err

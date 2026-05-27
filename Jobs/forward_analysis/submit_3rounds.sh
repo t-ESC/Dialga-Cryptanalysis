@@ -3,11 +3,11 @@
 ### -- specify queue -- 
 #BSUB -q hpc
 ### -- se3-round-cryptanalysis 
-#BSUB -J 3_round_cryptanalysis_backward
+#BSUB -J 3_round_cryptanalysis_forward
 ### -- as1 
 #BSUB -n 16
 #BSUB -R "rusage[mem=512MB]"
-#BSUB -W 48:00 
+#BSUB -W 24:00 
 ### -- specify that the cores must be on the same host -- 
 #BSUB -o Output_%J.out
 #BSUB -e Output_%J.err
@@ -21,4 +21,4 @@
 #BSUB -o Output_%J.out 
 #BSUB -e Output_%J.err 
 
-/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/Jobs/backward_analysis/find_maximum_differentials_3_rounds_backwards.py
+/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/Jobs/forward_analysis/find_maximum_differentials_3_rounds.py
