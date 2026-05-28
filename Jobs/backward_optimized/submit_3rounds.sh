@@ -3,7 +3,7 @@
 ### -- specify queue -- 
 #BSUB -q hpc
 ### -- se3-round-cryptanalysis 
-#BSUB -J 3_round_cryptanalysis_backward
+#BSUB -J cryptanalysis_backward_3
 ### -- as1 
 #BSUB -n 16
 #BSUB -R "rusage[mem=512MB]"
