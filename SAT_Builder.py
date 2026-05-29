@@ -57,18 +57,28 @@ class SAT_Builder:
 
         value_bits = [(value >> i) & 1 for i in range(127, -1, -1)] # Working with in BigEndian
 
-        for i in range(0, 128):
-            label = f"x_{self.current_state_number}_{i}"
-            self.add_variable(label)
-            self.current_state.append(label)
-            
+        if value == 0: # if no input diff is given
             clause = Clause()
-            match(value_bits[i]):
-                case 0:
-                    clause.append(-self.label_to_variable[label])
-                case 1:
-                    clause.append(self.label_to_variable[label])
+            for i in range(128):
+                label = f"x_{self.current_state_number}_{i}"
+                self.add_variable(label)
+                self.current_state.append(label)
+                clause.append(self.label_to_variable[label])
             self.clauses.append(clause)
+
+        else:
+            for i in range(0, 128):
+                label = f"x_{self.current_state_number}_{i}"
+                self.add_variable(label)
+                self.current_state.append(label)
+
+                clause = Clause()
+                match(value_bits[i]):
+                    case 0:
+                        clause.append(-self.label_to_variable[label])
+                    case 1:
+                        clause.append(self.label_to_variable[label])
+                self.clauses.append(clause)
             
         assert len(self.current_state) == 128
 
@@ -422,7 +432,6 @@ class SAT_Builder:
 
     def add_probability_constraint(self, k_bound:int = 4):
         # my (x1, ... xn) I need to find all probability variables
-        k_bound += 1
         p_is = []
         for i in range(self.current_state_number + 1):
             if self.label_to_variable.get(f"p_{i}_0_0"):
