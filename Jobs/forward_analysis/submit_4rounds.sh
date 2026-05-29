@@ -3,9 +3,9 @@
 ### -- specify queue -- 
 #BSUB -q hpc
 ### -- se3-round-cryptanalysis 
-#BSUB -J 4_round_cryptanalysis_forward
+#BSUB -J round_cryptanalysis_f4
 ### -- as1 
-#BSUB -n 16
+#BSUB -n 20
 #BSUB -R "rusage[mem=512MB]"
 #BSUB -W 48:00 
 ### -- specify that the cores must be on the same host -- 

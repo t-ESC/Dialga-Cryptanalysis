@@ -29,22 +29,17 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int) -> bool:
 def find_maximum_differentials_for_input_diff(input_diff:int):
     probabilities = [0, 0, 0, 0]
     for first_round in range(4):
-        sat = False
-        rough_prob = 10
-        while not sat:
-            if solve_SAT_problem(input_diff, first_round, rough_prob):
-                sat = True
-                break
-            else:
-                rough_prob += 10
-        
-        probabilities[first_round] = rough_prob
+        low = 10
+        upper = 80
 
-        for i in range(10):
-            prob = (rough_prob - 10) + 1
-            if solve_SAT_problem(input_diff, first_round, prob+i):
-                probabilities[first_round] = prob+i
-                break
+        while low + 1 < upper:
+            mid = (low+upper) // 2
+            if solve_SAT_problem(input_diff, first_round, mid):
+                upper = mid
+            else:
+                low = mid
+        
+        probabilities[first_round] = upper
     
     return probabilities
 
