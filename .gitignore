@@ -219,3 +219,7 @@ __marimo__/
 
 # Outfile
 assertion.cnf
+
+# HPC Output files
+**/Output_*.err
+**/Output_*.out
