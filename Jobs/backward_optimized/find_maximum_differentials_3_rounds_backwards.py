@@ -60,8 +60,6 @@ def main():
                     "Round0": probabilities[3]
                     })
             
-            break
-        break
             
     
     os.makedirs("output", exist_ok=True)
