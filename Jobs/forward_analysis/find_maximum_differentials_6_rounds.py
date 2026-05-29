@@ -19,7 +19,7 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int) -> bool:
     builder.add_round((first_round + 4) % 4)
     builder.add_round((first_round + 5) % 4)
     builder.add_probability_constraint(probability)
-    s = Solver(verbose = 0, threads = 20)
+    s = Solver(verbose = 0, threads = 16)
     for clause in builder.clauses:
         if clause.xor:
             s.add_xor_clause([abs(var) for var in clause.variables], False)

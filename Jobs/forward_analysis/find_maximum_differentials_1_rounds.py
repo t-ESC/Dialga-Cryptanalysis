@@ -27,7 +27,7 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int) -> bool:
 def find_maximum_differentials_for_input_diff(input_diff:int):
     probabilities = [0, 0, 0, 0]
     for first_round in range(4):
-        low = 2
+        low = 1
         upper = 80
 
         while low + 1 < upper:
