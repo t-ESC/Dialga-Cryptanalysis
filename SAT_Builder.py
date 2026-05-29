@@ -57,18 +57,28 @@ class SAT_Builder:
 
         value_bits = [(value >> i) & 1 for i in range(127, -1, -1)] # Working with in BigEndian
 
-        for i in range(0, 128):
-            label = f"x_{self.current_state_number}_{i}"
-            self.add_variable(label)
-            self.current_state.append(label)
-            
+        if value == 0: # if no input diff is given
             clause = Clause()
-            match(value_bits[i]):
-                case 0:
-                    clause.append(-self.label_to_variable[label])
-                case 1:
-                    clause.append(self.label_to_variable[label])
+            for i in range(128):
+                label = f"x_{self.current_state_number}_{i}"
+                self.add_variable(label)
+                self.current_state.append(label)
+                clause.append(self.label_to_variable[label])
             self.clauses.append(clause)
+
+        else:
+            for i in range(0, 128):
+                label = f"x_{self.current_state_number}_{i}"
+                self.add_variable(label)
+                self.current_state.append(label)
+
+                clause = Clause()
+                match(value_bits[i]):
+                    case 0:
+                        clause.append(-self.label_to_variable[label])
+                    case 1:
+                        clause.append(self.label_to_variable[label])
+                self.clauses.append(clause)
             
         assert len(self.current_state) == 128
 
@@ -128,10 +138,10 @@ class SAT_Builder:
                 y = f"x_{self.current_state_number}_{(i*8)+j}"
                 x = f"x_{self.current_state_number - 1}_{(PI[r][i] * 8)+j}"
             
-                self.clauses.append(Clause(variables=[
-                    -self.label_to_variable[y],
-                    self.label_to_variable[x]
-                ],xor=True))
+                # self.clauses.append(Clause(variables=[
+                #     -self.label_to_variable[y],
+                #     self.label_to_variable[x]
+                # ],xor=True))
                 self.clauses.append(Clause(variables=[
                     self.label_to_variable[y],
                     -self.label_to_variable[x]
@@ -154,10 +164,10 @@ class SAT_Builder:
                 y = f"x_{self.current_state_number}_{(i*8)+j}"
                 x = f"x_{self.current_state_number - 1}_{(PI_INV[r][i] * 8)+j}"
             
-                self.clauses.append(Clause(variables=[
-                    -self.label_to_variable[y],
-                    self.label_to_variable[x]
-                ],xor=True))
+                # self.clauses.append(Clause(variables=[
+                #     -self.label_to_variable[y],
+                #     self.label_to_variable[x]
+                # ],xor=True))
                 self.clauses.append(Clause(variables=[
                     self.label_to_variable[y],
                     -self.label_to_variable[x]
@@ -178,10 +188,10 @@ class SAT_Builder:
                     -self.label_to_variable[y],
                     self.label_to_variable[x]
                 ],xor=True))
-            self.clauses.append(Clause(variables=[
-                    self.label_to_variable[y],
-                    -self.label_to_variable[x]
-                ],xor=True))
+            # self.clauses.append(Clause(variables=[
+            #         self.label_to_variable[y],
+            #         -self.label_to_variable[x]
+            #     ],xor=True))
 
         self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
@@ -196,10 +206,10 @@ class SAT_Builder:
                     -self.label_to_variable[y],
                     self.label_to_variable[x]
                 ],xor=True))
-            self.clauses.append(Clause(variables=[
-                    self.label_to_variable[y],
-                    -self.label_to_variable[x]
-                ],xor=True))
+            # self.clauses.append(Clause(variables=[
+            #         self.label_to_variable[y],
+            #         -self.label_to_variable[x]
+            #     ],xor=True))
 
         self.current_state = [f"x_{self.current_state_number}_{i}" for i in range(0, 128)]
 
@@ -225,12 +235,12 @@ class SAT_Builder:
                     self.label_to_variable[x_2],
                     self.label_to_variable[x_3],
                 ], xor=True))
-                self.clauses.append(Clause(variables=[
-                    -self.label_to_variable[y_0],
-                    self.label_to_variable[x_1],
-                    self.label_to_variable[x_2],
-                    self.label_to_variable[x_3],
-                ], xor=True))
+                # self.clauses.append(Clause(variables=[
+                #     -self.label_to_variable[y_0],
+                #     self.label_to_variable[x_1],
+                #     self.label_to_variable[x_2],
+                #     self.label_to_variable[x_3],
+                # ], xor=True))
 
                 # Row = 1
                 self.clauses.append(Clause(variables=[
@@ -239,12 +249,12 @@ class SAT_Builder:
                     self.label_to_variable[x_2],
                     self.label_to_variable[x_3],
                 ], xor=True))
-                self.clauses.append(Clause(variables=[
-                    -self.label_to_variable[y_1],
-                    self.label_to_variable[x_0],
-                    self.label_to_variable[x_2],
-                    self.label_to_variable[x_3],
-                ], xor=True))
+                # self.clauses.append(Clause(variables=[
+                #     -self.label_to_variable[y_1],
+                #     self.label_to_variable[x_0],
+                #     self.label_to_variable[x_2],
+                #     self.label_to_variable[x_3],
+                # ], xor=True))
 
                 # Row = 2
                 self.clauses.append(Clause(variables=[
@@ -253,12 +263,12 @@ class SAT_Builder:
                     self.label_to_variable[x_1],
                     self.label_to_variable[x_3],
                 ], xor=True))
-                self.clauses.append(Clause(variables=[
-                    -self.label_to_variable[y_2],
-                    self.label_to_variable[x_0],
-                    self.label_to_variable[x_1],
-                    self.label_to_variable[x_3],
-                ], xor=True))
+                # self.clauses.append(Clause(variables=[
+                #     -self.label_to_variable[y_2],
+                #     self.label_to_variable[x_0],
+                #     self.label_to_variable[x_1],
+                #     self.label_to_variable[x_3],
+                # ], xor=True))
 
                 # Row = 3
                 self.clauses.append(Clause(variables=[
@@ -267,12 +277,12 @@ class SAT_Builder:
                     self.label_to_variable[x_1],
                     self.label_to_variable[x_2],
                 ], xor=True))
-                self.clauses.append(Clause(variables=[
-                    -self.label_to_variable[y_3],
-                    self.label_to_variable[x_0],
-                    self.label_to_variable[x_1],
-                    self.label_to_variable[x_2],
-                ], xor=True))
+                # self.clauses.append(Clause(variables=[
+                #     -self.label_to_variable[y_3],
+                #     self.label_to_variable[x_0],
+                #     self.label_to_variable[x_1],
+                #     self.label_to_variable[x_2],
+                # ], xor=True))
 
                 
         

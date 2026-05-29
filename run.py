@@ -3,19 +3,19 @@ from Result_Parser import Result_Parser
 import subprocess
 from pycryptosat import Solver
 
-MAX_SOLS = 20
+MAX_SOLS = 5
 
 def main():
     # 0xff000000000000000000000000000000 for reference
     # builder = SAT_Builder(0xaa00000000aa00000000aa00000000aa)
     builder = SAT_Builder(0x2)
 
-    builder.add_round(0)
-    builder.add_round(1)
-    builder.add_round(2)
-    builder.add_round(3)
+    builder.add_round_inv(0)
+    builder.add_round_inv(3)
+    builder.add_round_inv(2)
+    builder.add_round_inv(1)
     # builder.add_round(0)
-    builder.add_probability_constraint(44)
+    builder.add_probability_constraint(65)
     
     filename = "assertion.cnf"
     builder.to_cnf(filename)
