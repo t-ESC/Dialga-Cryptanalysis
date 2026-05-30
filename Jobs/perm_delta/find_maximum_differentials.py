@@ -1,0 +1,109 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from SAT_Builder import SAT_Builder
+from Result_Parser import Result_Parser
+from pycryptosat import Solver
+import pandas as pd
+from tqdm import tqdm
+import argparse
+
+# pd.DataFrame([{"Input_diff": "0x1", "Round0": 1, "Round1": 2, "Round3": 3}])
+
+def solve_SAT_problem(input_diff:int, first_round:int, probability:int, number_of_rounds:int, backwards:bool = False, threads:int = 16) -> bool:
+    builder = SAT_Builder(input_diff)
+    ## Rounds to be tested
+    if not backwards:
+        for i in range(number_of_rounds):
+            builder.add_round((first_round + i) % 4)
+    else:
+        for i in range(number_of_rounds):
+            builder.add_round_inv(3-(first_round + i) % 4)
+
+    builder.add_probability_constraint(probability)
+
+    s = Solver(verbose = 0, threads = threads)
+    for clause in builder.clauses:
+        if clause.xor:
+            s.add_xor_clause([abs(var) for var in clause.variables], False)
+        else:
+            s.add_clause(clause.variables)
+
+    sat, _ = s.solve()
+    return sat
+
+def find_maximum_differentials_for_input_diff(input_diff:int, number_of_rounds:int, backwards:bool = False, threads:int = 16):
+    probabilities = [0, 0, 0, 0]
+    for first_round in range(4):
+        low = 1
+        upper = 80
+
+        while low + 1 < upper:
+            mid = (low+upper) // 2
+            if solve_SAT_problem(input_diff, first_round, mid, number_of_rounds, backwards, threads):
+                upper = mid
+            else:
+                low = mid
+        
+        probabilities[first_round] = upper
+    
+    return probabilities
+
+def permbits(input:int):
+    PBI = [4, 1, 6, 3, 0, 5, 2, 7, 9, 14, 15, 8, 13, 10, 11, 12, 18, 19, 20, 17, 22, 23, 16, 21, 31, 28, 25, 26, 27, 24, 29, 30, 36, 33, 38, 35, 32, 37, 34, 39, 41, 46, 47, 40, 45, 42, 43, 44, 50, 51, 52, 49, 54, 55, 48, 53, 63, 60, 57, 58, 59, 56, 61, 62, 68, 65, 70, 67, 64, 69, 66, 71, 73, 78, 79, 72, 77, 74, 75, 76, 82, 83, 84, 81, 86, 87, 80, 85, 95, 92, 89, 90, 91, 88, 93, 94, 100, 97, 102, 99, 96, 101, 98, 103, 105, 110, 111, 104, 109, 106, 107, 108, 114, 115, 116, 113, 118, 119, 112, 117, 127, 124, 121, 122, 123, 120, 125, 126]
+    
+    assert input >= 0x00000000000000000000000000000000
+    assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
+    
+    output = 0
+
+    for i in range(128):
+        bit_value = (input >> (127-PBI[i])) & 0b1
+        output |= bit_value << (127-i)
+
+    return output
+
+
+def permbits_inv(input: int):
+    PBI_INV = [4, 1, 6, 3, 0, 5, 2, 7, 11, 8, 13, 14, 15, 12, 9, 10, 22, 19, 16, 17, 18, 23, 20, 21, 29, 26, 27, 28, 25, 30, 31, 24, 36, 33, 38, 35, 32, 37, 34, 39, 43, 40, 45, 46, 47, 44, 41, 42, 54, 51, 48, 49, 50, 55, 52, 53, 61, 58, 59, 60, 57, 62, 63, 56, 68, 65, 70, 67, 64, 69, 66, 71, 75, 72, 77, 78, 79, 76, 73, 74, 86, 83, 80, 81, 82, 87, 84, 85, 93, 90, 91, 92, 89, 94, 95, 88, 100, 97, 102, 99, 96, 101, 98, 103, 107, 104, 109, 110, 111, 108, 105, 106, 118, 115, 112, 113, 114, 119, 116, 117, 125, 122, 123, 124, 121, 126, 127, 120]
+    
+    assert input >= 0x00000000000000000000000000000000
+    assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
+    
+    output = 0
+
+    for i in range(128):
+        bit_value = (input >> (127-PBI_INV[i])) & 0b1
+        output |= bit_value << (127-i)
+
+    return output
+
+def main(number_of_rounds:int, backwards:bool = False, threads:int = 16):
+    data = []
+    for value in tqdm(range(1, 16)):
+        for place in tqdm(range(32), leave=False):
+            input_diff = permbits_inv(value << place*4)
+            probabilities = find_maximum_differentials_for_input_diff(input_diff, number_of_rounds, backwards, threads)
+            data.append(
+                {
+                    "Input_diff": f"{input_diff:032x}", 
+                    "Round0": probabilities[0], 
+                    "Round1": probabilities[1], 
+                    "Round2": probabilities[2], 
+                    "Round3": probabilities[3]
+                    })
+            break
+        break
+    
+    os.makedirs("output", exist_ok=True)
+    backwards = "f" if not backwards else "b"
+    pd.DataFrame(data).to_csv(f"output/{number_of_rounds}_round_differentials_{backwards}")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="Find_maximum_differentials"
+    )
+    parser.add_argument("number_of_rounds", type=int)
+    parser.add_argument("--backwards", "-b", action='store_true')
+    parser.add_argument("--threads", "-t", type=int, default=16)
+    args = parser.parse_args()
+    main(args.number_of_rounds, args.backwards, args.threads)

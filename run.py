@@ -8,18 +8,20 @@ MAX_SOLS = 1
 def main():
     # 0xff000000000000000000000000000000 for reference
     # builder = SAT_Builder(0xaa00000000aa00000000aa00000000aa)
-    builder = SAT_Builder(0)
+    builder = SAT_Builder(0x00112233445566778899AABBCCDDEEFF)
 
-    builder.add_round(0)
-    builder.add_round(1)
-    builder.add_round(2)
-    builder.add_round(3)
-    builder.add_round(0)
+    builder.add_subcell()
+
+    # builder.add_round(0)
     # builder.add_round(1)
     # builder.add_round(2)
     # builder.add_round(3)
     # builder.add_round(0)
-    builder.add_probability_constraint(50)
+    # builder.add_round(1)
+    # builder.add_round(2)
+    # builder.add_round(3)
+    # builder.add_round(0)
+    # builder.add_probability_constraint(50)
     
     filename = "assertion.cnf"
     builder.to_cnf(filename)
