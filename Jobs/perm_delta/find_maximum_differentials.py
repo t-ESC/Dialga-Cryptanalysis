@@ -92,8 +92,6 @@ def main(number_of_rounds:int, backwards:bool = False, threads:int = 16):
                     "Round2": probabilities[2], 
                     "Round3": probabilities[3]
                     })
-            break
-        break
     
     os.makedirs("output", exist_ok=True)
     backwards = "f" if not backwards else "b"
