@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
 
 from SAT_Builder import SAT_Builder
 from Result_Parser import Result_Parser
