@@ -218,7 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 
 # Outfile
-assertion.cnf
+**/*.cnf
 
 # HPC Output files
 **/Output_*.err
