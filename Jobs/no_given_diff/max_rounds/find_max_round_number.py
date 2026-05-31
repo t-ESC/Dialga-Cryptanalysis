@@ -29,7 +29,9 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int, number_o
         else:
             s.add_clause(clause.variables)
 
+    print(f"Solving problem: Round{first_round}, P = {probability}, N = {number_of_rounds}, backwards = {backwards}")
     sat, _ = s.solve()
+    print("solvable" if sat else "unsolvable")
     return sat
 
 def find_max_round_number(backwards:bool = False, threads:int = 16, probability:int = 128):
@@ -37,17 +39,15 @@ def find_max_round_number(backwards:bool = False, threads:int = 16, probability:
     
     for first_round in tqdm(range(4)):
         lower = 1
-        upper = 20
+        upper = 16
         while lower+1 < upper:
             mid = (upper + lower) // 2
-            print(f"Checking {mid} rounds starting with Round{first_round}")
             if solve_SAT_problem(input_diff=0, first_round=first_round, probability=probability, number_of_rounds=mid, backwards=backwards, threads=threads):
                 upper = mid
             else:
                 lower = mid
 
         max_rounds[first_round] = upper
-        print(f"With starting with Round{first_round}: {max_rounds[first_round]}")
 
     return max_rounds
 
@@ -67,5 +67,6 @@ if __name__ == "__main__":
     )
     parser.add_argument("--backwards", "-b", action='store_true')
     parser.add_argument("--threads", "-t", type=int, default=16)
+    parser.add_argument("--max_prob", "-p", type=int, default=128)
     args = parser.parse_args()
-    main(args.backwards, args.threads)
+    main(args.backwards, args.threads, args.max_prob)
