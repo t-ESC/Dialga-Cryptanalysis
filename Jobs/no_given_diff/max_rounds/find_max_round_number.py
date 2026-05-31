@@ -39,15 +39,15 @@ def find_max_round_number(backwards:bool = False, threads:int = 16, probability:
     
     for first_round in tqdm(range(4)):
         lower = 1
-        upper = 16
-        while lower+1 < upper:
-            mid = (upper + lower) // 2
+        upper = 6
+        while lower < upper:
+            mid = (upper + lower + 1) // 2
             if solve_SAT_problem(input_diff=0, first_round=first_round, probability=probability, number_of_rounds=mid, backwards=backwards, threads=threads):
-                upper = mid
-            else:
                 lower = mid
+            else:
+                upper = mid -1
 
-        max_rounds[first_round] = upper
+        max_rounds[first_round] = lower
 
     return max_rounds
 
