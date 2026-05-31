@@ -222,4 +222,7 @@ __marimo__/
 
 # HPC Output files
 **/Output_*.err
-**/Output_*.out
+**/*.out
+
+# CryptoMiniSAT bin
+cryptominisat5
