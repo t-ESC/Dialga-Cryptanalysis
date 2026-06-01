@@ -19,15 +19,18 @@ def main(threads:int = 16, first_round:int = 0, backwards:bool = False):
 
         while lower < upper:
             mid = (upper + lower + 1) // 2
-            file.write(f"Running {mid}_rounds_{first_round}_{'back' if backwards else ''}\n")
+            file.write(f"Running {mid}_rounds_{first_round}{'_back' if backwards else ''}\n")
+            file.flush()
             process = subprocess.run([f'./cryptominisat5', "-s", "0", "-t", f"{threads}", f"SAT_problems/{mid}_rounds_{first_round}{'_back' if backwards else ''}.cnf",])
             match process.returncode:
                 case 10:
                     lower = mid
                     file.write("sat\n")
+                    file.flush()
                 case 20:
                     upper = mid - 1
                     file.write("usat\n")
+                    file.flush()
                 case _:
                     raise Exception()
             
