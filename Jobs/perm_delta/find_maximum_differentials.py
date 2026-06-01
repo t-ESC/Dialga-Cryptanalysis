@@ -76,23 +76,37 @@ def permbits_inv(input: int):
 
     return output
 
-def main(number_of_rounds:int, backwards:bool = False, threads:int = 16, permuted:bool = False, split_jobs=False):
+def main(
+        number_of_rounds:int, 
+        backwards:bool = False, 
+        threads:int = 16, 
+        permuted:bool = False, 
+        job_name:str = "current",
+        start:int = 0,
+        capacity:int = 480):
+
     con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if permuted else ""}.db", autocommit=True)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS state (key text unique, value int);")
-    cur.execute(f"INSERT OR IGNORE INTO state (key) VALUES ('current');")
-    cur.execute("CREATE TABLE IF NOT EXISTS probabilities(i INTEGER PRIMARY KEY, input_diff text, round0 int, round1 int, round2 int, round3 int);")
+    cur.execute(f"INSERT OR IGNORE INTO state (key) VALUES ('{job_name}');")
+    cur.execute("CREATE TABLE IF NOT EXISTS probabilities(i INTEGER PRIMARY KEY, input_diff text unique, round0 int, round1 int, round2 int, round3 int);")
 
 
-    work_items = [value << place*4 for value in range(1,16) for place in range(32)]
-    cur.execute(f"SELECT value from state where key = 'current';")
+    work_items = [value << place*4 for value in range(1,16) for place in range(32)][start:start+capacity]
+    cur.execute(f"SELECT value from state where key = '{job_name}';")
     row = cur.fetchone()
+    # print(row)
+    # print(start)
+    # print(start+capacity)
     cache = row[0]-1 if row[0] else 0
+    if cache > len(work_items):
+        cache = 0
 
-    for idx, current_item in tqdm(enumerate(work_items, start=cache)):
-        cur.execute(f"UPDATE state SET value = {idx} where key = 'current';")
+    for idx, current_item in tqdm(enumerate(work_items[cache:])):
+        print(idx)
+        cur.execute(f"UPDATE state SET value = {cache + idx} where key = '{job_name}';")
         input_diff = permbits_inv(current_item) if permuted else current_item
-        cur.execute(f"INSERT INTO probabilities (input_diff) VALUES ('0x{input_diff:032x}');")
+        cur.execute(f"INSERT OR IGNORE INTO probabilities (input_diff) VALUES ('0x{input_diff:032x}');")
 
         for first_round in tqdm(range(4), leave=False):
             prob = find_maximum_differentials_for_input_diff(input_diff, first_round, number_of_rounds, backwards, threads)
@@ -106,6 +120,8 @@ if __name__ == "__main__":
     parser.add_argument("--backwards", "-b", action='store_true')
     parser.add_argument("--threads", "-t", type=int, default=16)
     parser.add_argument("--permuted_input", "-p", action='store_true')
-    parser.add_argument("--split_jobs", action='store_true')
+    parser.add_argument("--job_name", type=str)
+    parser.add_argument("--start", type=int, default=0)
+    parser.add_argument("--capacity", type=int, default=480)
     args = parser.parse_args()
-    main(args.number_of_rounds, args.backwards, args.threads, args.permuted_input, args.split_jobs)
+    main(args.number_of_rounds, args.backwards, args.threads, args.permuted_input, args.job_name, args.start, args.capacity)
