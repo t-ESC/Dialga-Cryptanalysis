@@ -21,4 +21,4 @@
 #BSUB -o Output_%J.out 
 #BSUB -e Output_%J.err 
 
-/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/Jobs/perm_delta/find_maximum_differentials.py 4 -t 16
+/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/Jobs/perm_delta/find_maximum_differentials.py 4 -t 16 -p
