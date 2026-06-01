@@ -7,6 +7,7 @@ from pycryptosat import Solver
 import pandas as pd
 from tqdm import tqdm
 import argparse
+import sqlite3
 
 # pd.DataFrame([{"Input_diff": "0x1", "Round0": 1, "Round1": 2, "Round3": 3}])
 
@@ -32,22 +33,19 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int, number_o
     sat, _ = s.solve()
     return sat
 
-def find_maximum_differentials_for_input_diff(input_diff:int, number_of_rounds:int, backwards:bool = False, threads:int = 16):
-    probabilities = [0, 0, 0, 0]
-    for first_round in range(4):
-        low = 1
-        upper = 80
+def find_maximum_differentials_for_input_diff(input_diff:int, first_round:int, number_of_rounds:int, backwards:bool = False, threads:int = 16) -> int:
+    low = 1
+    upper = 80
 
-        while low + 1 < upper:
-            mid = (low+upper) // 2
-            if solve_SAT_problem(input_diff, first_round, mid, number_of_rounds, backwards, threads):
-                upper = mid
-            else:
-                low = mid
-        
-        probabilities[first_round] = upper
+    while low + 1 < upper:
+        mid = (low+upper) // 2
+        if solve_SAT_problem(input_diff, first_round, mid, number_of_rounds, backwards, threads):
+            upper = mid
+        else:
+            low = mid
     
-    return probabilities
+    return upper
+    
 
 def permbits(input:int):
     PBI = [4, 1, 6, 3, 0, 5, 2, 7, 9, 14, 15, 8, 13, 10, 11, 12, 18, 19, 20, 17, 22, 23, 16, 21, 31, 28, 25, 26, 27, 24, 29, 30, 36, 33, 38, 35, 32, 37, 34, 39, 41, 46, 47, 40, 45, 42, 43, 44, 50, 51, 52, 49, 54, 55, 48, 53, 63, 60, 57, 58, 59, 56, 61, 62, 68, 65, 70, 67, 64, 69, 66, 71, 73, 78, 79, 72, 77, 74, 75, 76, 82, 83, 84, 81, 86, 87, 80, 85, 95, 92, 89, 90, 91, 88, 93, 94, 100, 97, 102, 99, 96, 101, 98, 103, 105, 110, 111, 104, 109, 106, 107, 108, 114, 115, 116, 113, 118, 119, 112, 117, 127, 124, 121, 122, 123, 120, 125, 126]
@@ -78,24 +76,28 @@ def permbits_inv(input: int):
 
     return output
 
-def main(number_of_rounds:int, backwards:bool = False, threads:int = 16):
-    data = []
-    for value in tqdm(range(1, 16)):
-        for place in tqdm(range(32), leave=False):
-            input_diff = permbits_inv(value << place*4)
-            probabilities = find_maximum_differentials_for_input_diff(input_diff, number_of_rounds, backwards, threads)
-            data.append(
-                {
-                    "Input_diff": f"{input_diff:032x}", 
-                    "Round0": probabilities[0], 
-                    "Round1": probabilities[1], 
-                    "Round2": probabilities[2], 
-                    "Round3": probabilities[3]
-                    })
-    
-    os.makedirs("output", exist_ok=True)
-    backwards = "f" if not backwards else "b"
-    pd.DataFrame(data).to_csv(f"output/{number_of_rounds}_round_differentials_{backwards}")
+def main(number_of_rounds:int, backwards:bool = False, threads:int = 16, permuted:bool = False, split_jobs=False):
+    con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if permuted else ""}.db", autocommit=True)
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS state (key text unique, value int);")
+    cur.execute(f"INSERT OR IGNORE INTO state (key) VALUES ('current');")
+    cur.execute("CREATE TABLE IF NOT EXISTS probabilities(i INTEGER PRIMARY KEY, input_diff text, round0 int, round1 int, round2 int, round3 int);")
+
+
+    work_items = [value << place*4 for value in range(1,16) for place in range(32)]
+    cur.execute(f"SELECT value from state where key = 'current';")
+    row = cur.fetchone()
+    cache = row[0]-1 if row[0] else 0
+
+    for idx, current_item in tqdm(enumerate(work_items, start=cache)):
+        cur.execute(f"UPDATE state SET value = {idx} where key = 'current';")
+        input_diff = permbits_inv(current_item) if permuted else current_item
+        cur.execute(f"INSERT INTO probabilities (input_diff) VALUES ('0x{input_diff:032x}');")
+
+        for first_round in tqdm(range(4), leave=False):
+            prob = find_maximum_differentials_for_input_diff(input_diff, first_round, number_of_rounds, backwards, threads)
+            cur.execute(f"UPDATE probabilities SET round{first_round} = {prob} WHERE input_diff = '0x{input_diff:032x}';")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="Find_maximum_differentials"
@@ -103,5 +105,7 @@ if __name__ == "__main__":
     parser.add_argument("number_of_rounds", type=int)
     parser.add_argument("--backwards", "-b", action='store_true')
     parser.add_argument("--threads", "-t", type=int, default=16)
+    parser.add_argument("--permuted_input", "-p", action='store_true')
+    parser.add_argument("--split_jobs", action='store_true')
     args = parser.parse_args()
-    main(args.number_of_rounds, args.backwards, args.threads)
+    main(args.number_of_rounds, args.backwards, args.threads, args.permuted_input, args.split_jobs)
