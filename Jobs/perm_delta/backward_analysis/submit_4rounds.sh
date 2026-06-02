@@ -3,11 +3,11 @@
 ### -- specify queue -- 
 #BSUB -q hpc
 ### -- se3-round-cryptanalysis 
-#BSUB -J round_cryptanalysis_b4
+#BSUB -J cryptanalysis_b4[1-32]%16
 ### -- as1 
-#BSUB -n 16
+#BSUB -n 1
 #BSUB -R "rusage[mem=512MB]"
-#BSUB -W 48:00
+#BSUB -W 24:00 
 ### -- specify that the cores must be on the same host -- 
 #BSUB -o Output_%J.out
 #BSUB -e Output_%J.err
@@ -21,4 +21,4 @@
 #BSUB -o Output_%J.out 
 #BSUB -e Output_%J.err 
 
-/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/Jobs/perm_delta/find_maximum_differentials.py 4 -b -t 16
+/zhome/2c/f/208660/data/dialga_differential_cryptanalysis/.venv/bin/python /zhome/2c/f/208660/data/dialga_differential_cryptanalysis/Jobs/perm_delta/find_maximum_differentials.py 4 -b -t 1 -p --job_name $(echo $LSB_JOBINDEX)_job --start $(((LSB_JOBINDEX -1) * 20)) --capacity 20
