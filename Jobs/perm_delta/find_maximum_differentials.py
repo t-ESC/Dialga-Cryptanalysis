@@ -35,7 +35,7 @@ def solve_SAT_problem(input_diff:int, first_round:int, probability:int, number_o
 
 def find_maximum_differentials_for_input_diff(input_diff:int, first_round:int, number_of_rounds:int, backwards:bool = False, threads:int = 16) -> int:
     low = 1
-    upper = 80
+    upper = 128
 
     while low + 1 < upper:
         mid = (low+upper) // 2
