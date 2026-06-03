@@ -61,7 +61,6 @@ def permbits(input:int):
 
     return output
 
-
 def permbits_inv(input: int):
     PBI_INV = [4, 1, 6, 3, 0, 5, 2, 7, 11, 8, 13, 14, 15, 12, 9, 10, 22, 19, 16, 17, 18, 23, 20, 21, 29, 26, 27, 28, 25, 30, 31, 24, 36, 33, 38, 35, 32, 37, 34, 39, 43, 40, 45, 46, 47, 44, 41, 42, 54, 51, 48, 49, 50, 55, 52, 53, 61, 58, 59, 60, 57, 62, 63, 56, 68, 65, 70, 67, 64, 69, 66, 71, 75, 72, 77, 78, 79, 76, 73, 74, 86, 83, 80, 81, 82, 87, 84, 85, 93, 90, 91, 92, 89, 94, 95, 88, 100, 97, 102, 99, 96, 101, 98, 103, 107, 104, 109, 110, 111, 108, 105, 106, 118, 115, 112, 113, 114, 119, 116, 117, 125, 122, 123, 124, 121, 126, 127, 120]
     
@@ -75,6 +74,17 @@ def permbits_inv(input: int):
         output |= bit_value << (127-i)
 
     return output
+
+def matrix_mul(input: int):
+    assert input >= 0x00000000000000000000000000000000
+    assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    as_bytes = input.to_bytes(16, byteorder='big')
+    result = bytearray(16)
+    for i in range(4):
+        for j in range(4):
+            result[4*i+j] = as_bytes[4*i+(j+1)%4] ^ as_bytes[4*i+(j+2)%4] ^ as_bytes[4*i+(j+3)%4]
+    return int.from_bytes(result, 'big')
+
 
 def main(
         number_of_rounds:int, 
