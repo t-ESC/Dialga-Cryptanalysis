@@ -117,12 +117,14 @@ def main(
         number_of_rounds:int, 
         backwards:bool = False, 
         threads:int = 16, 
-        permuted:bool = False, 
+        opt_f:bool = False,
+        opt_b:bool = False,
         job_name:str = "current",
         start:int = 0,
         capacity:int = 480):
 
-    con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if permuted else ""}.db", autocommit=True)
+    assert opt_f != opt_b
+    con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if opt_f else ""}.db", autocommit=True)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS state (key text unique, value int);")
     cur.execute(f"INSERT OR IGNORE INTO state (key) VALUES ('{job_name}');")
@@ -156,9 +158,10 @@ if __name__ == "__main__":
     parser.add_argument("number_of_rounds", type=int)
     parser.add_argument("--backwards", "-b", action='store_true')
     parser.add_argument("--threads", "-t", type=int, default=16)
-    parser.add_argument("--permuted_input", "-p", action='store_true')
+    parser.add_argument("--optimized_forward", "-of", action='store_true')
+    parser.add_argument("--optimized_backward", "-ob", action='store_true')
     parser.add_argument("--job_name", type=str)
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--capacity", type=int, default=480)
     args = parser.parse_args()
-    main(args.number_of_rounds, args.backwards, args.threads, args.permuted_input, args.job_name, args.start, args.capacity)
+    main(args.number_of_rounds, args.backwards, args.threads, args.optimized_forward, args.optimized_backward, args.job_name, args.start, args.capacity)
