@@ -75,6 +75,33 @@ def permbits_inv(input: int):
 
     return output
 
+def perm_bytes(input: int, round: int):
+    PI = [[7, 0, 13, 10, 5, 2, 15, 8, 4, 3, 14, 9, 6, 1, 12, 11],
+          [13, 0, 10, 7, 11, 6, 12, 1, 2, 15, 5, 8, 4, 9, 3, 14],
+          [7, 13, 10, 0, 6, 12, 11, 1, 5, 15, 8, 2, 4, 14, 9, 3],
+          [13, 8, 6, 3, 14, 11, 5, 0, 12, 9, 7, 2, 15, 10, 4, 1]]
+    assert input >= 0x00000000000000000000000000000000
+    assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    as_bytes = bytearray(input.to_bytes(16, byteorder='big'))
+    result = bytearray(16)
+    for i in range(16):
+        result[i] = as_bytes[PI[round][i]]
+    return int.from_bytes(result, 'big')
+
+
+def perm_bytes_inv(input:int, round: int):
+    PI_INV = [[1, 13, 5, 9, 8, 4, 12, 0, 7, 11, 3, 15, 14, 2, 10, 6],
+              [1, 7, 8, 14, 12, 10, 5, 3, 11, 13, 2, 4, 6, 0, 15, 9],
+              [3, 7, 11, 15, 12, 8, 4, 0, 10, 14, 2, 6, 5, 1, 13, 9],
+              [7, 15, 11, 3, 14, 6, 2, 10, 1, 9, 13, 5, 8, 0, 4, 12]]
+    assert input >= 0x00000000000000000000000000000000
+    assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    as_bytes = bytearray(input.to_bytes(16, byteorder='big'))
+    result = bytearray(16)
+    for i in range(16):
+        result[i] = as_bytes[PI_INV[round][i]]
+    return int.from_bytes(result, 'big')
+
 def matrix_mul(input: int):
     assert input >= 0x00000000000000000000000000000000
     assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
