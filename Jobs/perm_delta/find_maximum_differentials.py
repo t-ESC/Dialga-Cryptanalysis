@@ -49,30 +49,22 @@ def find_maximum_differentials_for_input_diff(input_diff:int, first_round:int, n
 
 def permbits(input:int):
     PBI = [4, 1, 6, 3, 0, 5, 2, 7, 9, 14, 15, 8, 13, 10, 11, 12, 18, 19, 20, 17, 22, 23, 16, 21, 31, 28, 25, 26, 27, 24, 29, 30, 36, 33, 38, 35, 32, 37, 34, 39, 41, 46, 47, 40, 45, 42, 43, 44, 50, 51, 52, 49, 54, 55, 48, 53, 63, 60, 57, 58, 59, 56, 61, 62, 68, 65, 70, 67, 64, 69, 66, 71, 73, 78, 79, 72, 77, 74, 75, 76, 82, 83, 84, 81, 86, 87, 80, 85, 95, 92, 89, 90, 91, 88, 93, 94, 100, 97, 102, 99, 96, 101, 98, 103, 105, 110, 111, 104, 109, 106, 107, 108, 114, 115, 116, 113, 118, 119, 112, 117, 127, 124, 121, 122, 123, 120, 125, 126]
-    
     assert input >= 0x00000000000000000000000000000000
     assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
-    
     output = 0
-
     for i in range(128):
         bit_value = (input >> (127-PBI[i])) & 0b1
         output |= bit_value << (127-i)
-
     return output
 
 def permbits_inv(input: int):
     PBI_INV = [4, 1, 6, 3, 0, 5, 2, 7, 11, 8, 13, 14, 15, 12, 9, 10, 22, 19, 16, 17, 18, 23, 20, 21, 29, 26, 27, 28, 25, 30, 31, 24, 36, 33, 38, 35, 32, 37, 34, 39, 43, 40, 45, 46, 47, 44, 41, 42, 54, 51, 48, 49, 50, 55, 52, 53, 61, 58, 59, 60, 57, 62, 63, 56, 68, 65, 70, 67, 64, 69, 66, 71, 75, 72, 77, 78, 79, 76, 73, 74, 86, 83, 80, 81, 82, 87, 84, 85, 93, 90, 91, 92, 89, 94, 95, 88, 100, 97, 102, 99, 96, 101, 98, 103, 107, 104, 109, 110, 111, 108, 105, 106, 118, 115, 112, 113, 114, 119, 116, 117, 125, 122, 123, 124, 121, 126, 127, 120]
-    
     assert input >= 0x00000000000000000000000000000000
     assert input <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF 
-    
     output = 0
-
     for i in range(128):
         bit_value = (input >> (127-PBI_INV[i])) & 0b1
         output |= bit_value << (127-i)
-
     return output
 
 def perm_bytes(input: int, round: int):
@@ -144,10 +136,14 @@ def main(
     for idx, current_item in tqdm(enumerate(work_items[cache:])):
         print(idx)
         cur.execute(f"UPDATE state SET value = {cache + idx} where key = '{job_name}';")
-        input_diff = permbits_inv(current_item) if permuted else current_item
-        cur.execute(f"INSERT OR IGNORE INTO probabilities (input_diff) VALUES ('0x{input_diff:032x}');")
-
         for first_round in tqdm(range(4), leave=False):
+            if opt_f and not opt_b:
+                input_diff = permbits_inv(current_item)
+            elif opt_b and not opt_f:
+                input_diff = matrix_mul(perm_bytes(permbits_inv(current_item), (3-first_round)%4))
+            else:
+                input_diff = current_item
+            cur.execute(f"INSERT OR IGNORE INTO probabilities (input_diff) VALUES ('0x{input_diff:032x}');")
             prob = find_maximum_differentials_for_input_diff(input_diff, first_round, number_of_rounds, backwards, threads)
             cur.execute(f"UPDATE probabilities SET round{first_round} = {prob} WHERE input_diff = '0x{input_diff:032x}';")
 
