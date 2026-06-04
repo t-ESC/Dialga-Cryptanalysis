@@ -5,7 +5,7 @@
 ### -- se3-round-cryptanalysis 
 #BSUB -J round_cryptanalysis_f2
 ### -- as1 
-#BSUB -n 16
+#BSUB -n 1
 #BSUB -R "rusage[mem=512MB]"
 #BSUB -W 24:00 
 ### -- specify that the cores must be on the same host -- 
