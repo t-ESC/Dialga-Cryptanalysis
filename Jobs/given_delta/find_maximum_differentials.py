@@ -115,7 +115,6 @@ def main(
         start:int = 0,
         capacity:int = 480):
 
-    assert opt_f == True and opt_b == True
     con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if opt_f else ""}.db", autocommit=True)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS state (key text unique, value int);")
