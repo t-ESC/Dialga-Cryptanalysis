@@ -82,6 +82,26 @@ class SAT_Builder:
             
         assert len(self.current_state) == 128
 
+    def fix_last_state(self, value:int):
+        assert value >= 0x00000000000000000000000000000000
+        assert value <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+        value_bits = [(value >> i) & 1 for i in range(127, -1, -1)] # Working with in BigEndian
+
+        for i in range(0, 128):
+            assert self.current_state_number >= 0
+            label = f"x_{self.current_state_number}_{i}"
+
+            clause = Clause()
+            match(value_bits[i]):
+                case 0:
+                    clause.append(-self.label_to_variable[label])
+                case 1:
+                    clause.append(self.label_to_variable[label])
+            self.clauses.append(clause)
+        
+        assert len(self.current_state) == 128
+
     def to_cnf(self, filename: str):
         with open(f"{filename}", "w") as file:
             for clause in self.clauses:
