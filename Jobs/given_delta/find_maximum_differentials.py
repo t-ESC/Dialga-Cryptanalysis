@@ -116,6 +116,7 @@ def main(
         capacity:int = 480):
 
     con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if opt_f else ""}.db", autocommit=True)
+    con.execute("PRAGMA journal_mode = WAL;")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS state (key text unique, value int);")
     cur.execute(f"INSERT OR IGNORE INTO state (key) VALUES ('{job_name}');")
