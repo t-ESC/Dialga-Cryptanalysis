@@ -115,13 +115,11 @@ def main(
         start:int = 0,
         capacity:int = 480):
 
-    con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if opt_f else ""}.db")
-    con.execute("PRAGMA journal_mode = WAL;")
+    con = sqlite3.connect(f"{number_of_rounds}_round_differentials_{"b" if backwards else "f"}{"_p" if opt_f else ""}.db", autocommit=True)
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS state (key text unique, value int);")
     cur.execute(f"INSERT OR IGNORE INTO state (key) VALUES ('{job_name}');")
     cur.execute("CREATE TABLE IF NOT EXISTS probabilities(i INTEGER PRIMARY KEY, input_diff text unique, round0 int, round1 int, round2 int, round3 int);")
-    con.commit()
 
     work_items = [value << place*4 for value in range(1,16) for place in range(32)][start:start+capacity]
     cur.execute(f"SELECT value from state where key = '{job_name}';")
@@ -135,9 +133,7 @@ def main(
 
     for idx, current_item in tqdm(enumerate(work_items[cache:])):
         print(idx)
-        cur = con.cursor()
         cur.execute(f"UPDATE state SET value = {cache + idx} where key = '{job_name}';")
-        con.commit()
         for first_round in tqdm(range(4), leave=False):
             if opt_f and not opt_b:
                 input_diff = permbits_inv(current_item)
@@ -145,12 +141,9 @@ def main(
                 input_diff = matrix_mul(perm_bytes(permbits_inv(current_item), (3-first_round)%4))
             else:
                 input_diff = current_item
-            cur = con.cursor()
             cur.execute(f"INSERT OR IGNORE INTO probabilities (input_diff) VALUES ('0x{input_diff:032x}');")
             prob = find_maximum_differentials_for_input_diff(input_diff, first_round, number_of_rounds, backwards, threads)
             cur.execute(f"UPDATE probabilities SET round{first_round} = {prob} WHERE input_diff = '0x{input_diff:032x}';")
-            con.commit()
-            
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
