@@ -5,6 +5,7 @@ ily Dialga [Ban+25], introduced in December 2025 by Banik et al. and comprising 
 variants that differ only in tweak size (128 or 256 bits) and in the number of rounds, with
 the full-round versions claimed to provide 128-bit security and the round-reduced variants
 claimed to provide 80-bit security.
+
 This thesis presents the first third-party cryptanalysis to the best of the author’s knowledge
 of the Dialga family. The work focuses on differential cryptanalysis. A search for multi-
 round differential characteristics was modeled as a boolean satisfiability (SAT) problem.
@@ -13,6 +14,7 @@ as cardinality constraints into the SAT problem as proposed by [Sin05]. To solve
 SAT problems, the SAT solver CryptoMiniSAT [SNC09] was used. Characteristics with
 matching boundary conditions were combined to build characteristics for lengths that were
 infeasible to solve directly.
+
 For six-round differential characteristics, characteristics were found with higher proba-
 bilities than the lower bounds reported by the original specification [Ban+25]. For the
 remaining configurations, the characteristics found here yield equal or worse probabili-
